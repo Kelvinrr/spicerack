@@ -20,3 +20,12 @@ Instrument --> IK
 C-Matrix --> CK
 Events --> EK (ESP, ESQ, ENB)
 Others
+
+# Running the Sample App
+
+If necessary, build the docker image.  Then run the service and navigate to localhost:5000 to see the JSON response.
+
+```bash
+$ docker build -t spicerack .
+$ docker run -v 5000:5000 spicerack 
+```
