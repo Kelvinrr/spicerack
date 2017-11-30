@@ -27,5 +27,5 @@ If necessary, build the docker image.  Then run the service and navigate to loca
 
 ```bash
 $ docker build -t spicerack .
-$ docker run -v 5000:5000 spicerack 
+$ docker run -p 5000:5000 spicerack 
 ```
