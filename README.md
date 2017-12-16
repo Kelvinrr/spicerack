@@ -14,18 +14,13 @@ locations and orientations of spacecrafts and planetary objects.
 
 What are the different data kernels(files)?
 
-Spacecraft --> SPK
-Planet --> SPK and PcK
-Instrument --> IK
-C-Matrix --> CK
-Events --> EK (ESP, ESQ, ENB)
-Others
+- Spacecraft --> SPK
+- Planet --> SPK and PcK
+- Instrument --> IK
+- C-Matrix --> CK
+- Events --> EK (ESP, ESQ, ENB)
 
-# Running the Sample App
-
-If necessary, build the docker image.  Then run the service and navigate to localhost:5000 to see the JSON response.
-
-```bash
-$ docker build -t spicerack .
-$ docker run -p 5000:5000 spicerack 
-```
+Different Parts of SpiceRack:
+- PandasHashing: Contains code that hashes a dataframe to tell if the dataframe's contain different data
+- P2P_ChatServer: Contains code for two classes that act as a client and a server, and can send simple text messages between    Client_One and Client_Two inside separate Docker containers
+- RestfulDirectory: Contains a Flask app that builds your local file system in a ReSFTful way. Each directory you can delve into more by putting into the running app on localhost
