@@ -12,12 +12,13 @@ class Client():
         #creates a thread to call the method that connects to all available connections
         #_thread.start_new_thread(self.connect, ())
 
-    def connect(self):
+    def connect(self, address):
         #loop through connections in dictionary from configuration file
         #this dictionary is in ChatListener
-        for connection in self.chat_listener.availableConnections.keys():
-            self.chat_sender = ChatSender(connection, self.chat_listener.availableConnections[connection][1])
-            self.chat_sender.sendMessage()
+        # for connection in self.chat_listener.availableConnections.keys():
+        # self.chat_sender = ChatSender(connection, self.chat_listener.availableConnections[connection][1])
+        self.chat_sender = ChatSender(address, self.chat_listener.availableConnections[connection][1])
+        self.chat_sender.sendMessage()
 
 
 class ChatListener():
