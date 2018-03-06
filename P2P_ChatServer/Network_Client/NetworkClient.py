@@ -41,7 +41,7 @@ class ChatListener():
         self.listen_socket.bind((self.myIP, self.myPort))
         self.listen_socket.listen(5)
 
-        # _thread.start_new_thread(self.listenConnections, ())
+        _thread.start_new_thread(self.listenConnections, ())
 
     # continue to listen for incoming connections from inside execution thread
     def listenConnections(self):
@@ -92,6 +92,7 @@ class ChatListener():
     def parseConfig(self):
         config = open("Configuration_File.txt", "r")
         configInfo = config.readlines()
+        config.close()
 
         client_list = []
         for line in configInfo:
@@ -102,6 +103,8 @@ class ChatListener():
         for line in client_list:
             client_list[i] = line.split(',')
             i += 1
+
+        del client_list[0]
 
         for lst in client_list:
             for item in lst:
@@ -138,9 +141,13 @@ class ChatSender():
 # main method to run the network
 def main():
 
-    # chat_listener = ChatListener('192.168.1.110', 40050)
-    # chat_sender = ChatSender('192.168.1.109', 30012)
-    client = Client('192.168.0.103', 40050)
+    local_information = open("Configuration_File.txt", "r")
+    local = local_information.readlines()
+    local_information.close()
+    local_ip = local[5][8:21]
+    local_port = int(local[5][24:])
+
+    client = Client(local_ip, local_port)
 
     while True:
         pass

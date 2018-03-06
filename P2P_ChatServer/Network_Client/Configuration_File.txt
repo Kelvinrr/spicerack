@@ -3,6 +3,8 @@ Network Configuration File
 
 Network Clients:
 
+Local: '192.168.0.102', 40050
+
 1. '192.168.1.109', 'Daniel', 50044
 
 2. '192.168.1.110', 'Tyler', 30043
