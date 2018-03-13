@@ -85,6 +85,8 @@ class ChatListener():
                     print("Connection closed.")
                     self.activeConnectionsDict[address].close()
                     self.activeSenderFlag = 0
+                elif message == 'Update':
+                    self.send_socket.sendall(str('Recieved: Will begin to update')).encode()
                 else:
                     self.activeConnectionsDict[address].send(str(message).encode())
 
@@ -145,10 +147,10 @@ def main():
     local = local_information.readlines()
     local_information.close()
     local_ip = '0.0.0.0'
-    local_port = 8080
+    local_port = 8081
 
-    client_ip = 'spice'
-    client_port = 8081
+    client_ip = 'spicerack'
+    client_port = 8080
     #local_ip = local[5][8:21]
     #local_port = int(local[5][24:])
 

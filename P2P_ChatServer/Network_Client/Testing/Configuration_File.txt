@@ -3,9 +3,9 @@ Network Configuration File
 
 Network Clients:
 
-Local: '0.0.0.0', 8080
+Local: '0.0.0.0', 8081
 
-1. '172.19.0.3', 'Daniel', 8081
+1. '172.19.0.2', 'Daniel', 8080
 
 ====================================================
 End Configuration File
