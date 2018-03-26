@@ -1,5 +1,5 @@
 Home: /app/Folder1/
-Client1: /app/Folder2/
+Client1: /Folder2/
 Client2: /app/Folder2/
 Client3: /app/Folder2/
 Client4: /app/Folder2/

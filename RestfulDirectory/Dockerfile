@@ -1,6 +1,6 @@
 FROM python:3
 
-RUN pip install flask pandas pyfarmhash numpy
+RUN pip install flask pandas pyfarmhash numpy pexpect
 
 RUN apt-get update && apt-get -y install rsync
 

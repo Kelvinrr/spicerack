@@ -4,6 +4,8 @@ from flask import jsonify
 import pandas as pd
 import numpy as np
 import farmhash
+import pexpect
+import sys
 
 app = Flask(__name__)
 
@@ -33,6 +35,25 @@ def generate_routes(possible_file):
 
     # Returns your directory laid out as directories and files
     return jsonify(Directories = file_paths, Files = actual_files)
+
+# Lists all nodes that can be synced with
+@app.route('/update/')
+def update():
+    with open('config.txt', 'r') as f:
+            files = []
+            for line in f:
+                research = line.split(':')
+                files.append(research[0].strip())
+    return jsonify(Nodes = files)
+
+
+@app.route('/update/<node>')
+def pull(node):
+
+    # TODO Implment RSYNC synchronize_directory
+
+    return "RSYNCED {}".format(node)
+
 
 @app.route('/naif/<path:data>')
 def naif_missions(data):
@@ -99,8 +120,26 @@ def synchronize_directory():
 
     else:
         # print("Synchronizing Directories: rsync -av " + data.index.name + "/ " + data.index.name + "/")
-        os.system("rsync -av " + sync[0] + ' ' + sync[1])
+        #os.system("rsync -av " + sync[0] + ' ' + sync[1])
+        rsync(sync[0], sync[1])
         return("SYNCED " + sync[0] + " " + "and" + " " + sync[1])
+
+@app.route('/hash')
+def hash_dataframe():
+    dataframe = configure()
+
+    data = create_dirdf(dataframe[0].strip())
+    return farmhash.hash64(str(data.values))
+
+def rsync(SRC, DEST):
+
+    args = ["-c", "rsync -avP {} {}".format(SRC, DEST)]
+    pexpect.run('/bin/bash', args=args)
+    # Execute the transfer
+    # child.logfile_read = sys.stdout  # log what the child sends back
+    # child.expect("Password:")
+    # child.sendline("#######")
+    # child.expect(pexpect.EOF)
 
 def configure():
     with open('/app/config.txt', 'r') as f:
@@ -109,6 +148,8 @@ def configure():
             research = line.split(':')
             files.append(research[1].strip())
         return files
+
+
 
 def create_dirdf(directory):
     if not os.path.exists(directory):
