@@ -24,3 +24,12 @@ Different Parts of SpiceRack:
 - PandasHashing: Contains code that hashes a dataframe to tell if the dataframe's contain different data
 - P2P_ChatServer: Contains code for two classes that act as a client and a server, and can send simple text messages between    Client_One and Client_Two inside separate Docker containers
 - RestfulDirectory: Contains a Flask app that builds your local file system in a ReSFTful way. Each directory you can delve into more by putting into the running app on localhost
+
+
+
+In order for this to work:
+
+- Need to add everyone to a config.txt file that you want to be synced with
+- Need to generate ssh keys using ssh-keygen (The path to that key must be
+                                              listed in the ssh.py file, and run
+                                              the ssh.py script as well)

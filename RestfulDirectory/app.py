@@ -39,20 +39,18 @@ def generate_routes(possible_file):
 # Lists all nodes that can be synced with
 @app.route('/update/')
 def update():
-    with open('config.txt', 'r') as f:
-            files = []
-            for line in f:
-                research = line.split(':')
-                files.append(research[0].strip())
-    return jsonify(Nodes = files)
+    users, ip, filepath = configure()
+    return jsonify(Nodes = users)
 
 
 @app.route('/update/<node>')
 def pull(node):
 
-    # TODO Implment RSYNC synchronize_directory
+    user, ip, filepath = configure()
+    users_info = make_user_ip_filepath_dict(user, ip, filepath)
 
-    return "RSYNCED {}".format(node)
+    rsync(users_info['Home'][1], node, users_info[node][0], users_info[node][1])
+    return("SYNCED " + users_info['Home'][0] + " " + "and" + " " + users_info[node][1])
 
 
 @app.route('/naif/<path:data>')
@@ -102,59 +100,74 @@ def readable_missions(data):
     # Returns your directory laid out as directories and files
     return jsonify(Missions = missions)
 
-@app.route('/sync')
-def synchronize_directory():
-
-    sync = configure()
-
-    data = create_dirdf(sync[0].strip())
-    facility = create_dirdf(sync[1].strip())
-
-
-    dir1hash = farmhash.hash64(str(data.values))
-    facilityhash = farmhash.hash64(str(facility.values))
-
-    if dir1hash == facilityhash:
-        return ("Directories '" + sync[0] + "' and '" + sync[1] + "' SYNCED")
-        # return("Directories are identical")
-
-    else:
-        # print("Synchronizing Directories: rsync -av " + data.index.name + "/ " + data.index.name + "/")
-        #os.system("rsync -av " + sync[0] + ' ' + sync[1])
-        rsync(sync[0], sync[1])
-        return("SYNCED " + sync[0] + " " + "and" + " " + sync[1])
+# @app.route('/sync')
+# def synchronize_directory():
+#
+#     ip, user, filepath = configure()
+#
+#     #data = create_dirdf(sync[0].strip())
+#     #facility = create_dirdf(sync[1].strip())
+#
+#
+#     #dir1hash = farmhash.hash64(str(data.values))
+#     #facilityhash = farmhash.hash64(str(facility.values))
+#
+#     # if dir1hash == facilityhash:
+#     #     return ("Directories '" + sync[0] + "' and '" + sync[1] + "' SYNCED")
+#     #     # return("Directories are identical")
+#     #
+#     # else:
+#     #     # print("Synchronizing Directories: rsync -av " + data.index.name + "/ " + data.index.name + "/")
+#     rsync(filepath[0], user[1], ip[1], filepath[1])
+#     return("SYNCED " + filepath[0] + " " + "and" + " " + filepath[1])
 
 @app.route('/hash')
 def hash_dataframe():
-    dataframe = configure()
+    user, ip, filepath = configure()
+    home = make_user_ip_filepath_dict(user, ip, filepath)
+    dataframe = create_dirdf(home['Home'][1].strip())
+    #data = create_dirdf(dataframe[0].strip())
 
-    data = create_dirdf(dataframe[0].strip())
-    return farmhash.hash64(str(data.values))
+    return str(farmhash.hash64((str(dataframe.values))))
 
-def rsync(SRC, DEST):
+def rsync(SRC, USER, IP, DEST):
+    os.system("rsync -avP" + SRC + ' ' + USER + '@' + IP + ':' + DEST)
 
-    args = ["-c", "rsync -avP {} {}".format(SRC, DEST)]
-    pexpect.run('/bin/bash', args=args)
-    # Execute the transfer
-    # child.logfile_read = sys.stdout  # log what the child sends back
-    # child.expect("Password:")
-    # child.sendline("#######")
-    # child.expect(pexpect.EOF)
 
 def configure():
-    with open('/app/config.txt', 'r') as f:
-        files = []
+    with open('config.txt', 'r') as f:
+        ip = []
+        user = []
+        filepath  = []
         for line in f:
-            research = line.split(':')
-            files.append(research[1].strip())
-        return files
+            research = line.split(': ')
+            ip.append(research[0].strip())
+            #print(research[0])
+
+            research = line.split(' ')
+            #print(research[1])
+            user.append(research[1].strip())
+
+            #print(research[2])
+            filepath.append(research[2].strip())
+
+        # print(ip)
+        # print(user)
+        # print(filepath)
 
 
+        return user, ip, filepath
+
+def make_user_ip_filepath_dict(user, ip, filepath):
+    zipped = list(zip(ip, filepath))
+    new_dict = dict()
+    new_dict = dict(zip(user, zipped))
+
+    return new_dict
 
 def create_dirdf(directory):
-    if not os.path.exists(directory):
-        print("Error: Directory '" + directory + "' does not exist.")
-        return
+    # if not os.path.exists(directory):
+    #     return("Error: Directory '" + directory + "' does not exist.")
 
     filenames = []
     hashvalues = []
