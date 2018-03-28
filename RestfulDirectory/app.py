@@ -130,6 +130,14 @@ def hash_dataframe():
 
     return str(farmhash.hash64((str(dataframe.values))))
 
+@app.route('/dataframe')
+def make_df():
+    user, ip, filepath = configure()
+    home = make_user_ip_filepath_dict(user, ip, filepath)
+    dataframe = create_dirdf(home['Home'][1].strip())
+    df_json = dataframe.to_json(orient='index')
+    return df_json
+
 def rsync(SRC, USER, IP, DEST):
     os.system("rsync -avP" + SRC + ' ' + USER + '@' + IP + ':' + DEST)
 
@@ -165,6 +173,7 @@ def make_user_ip_filepath_dict(user, ip, filepath):
 
     return new_dict
 
+# @app.route('/df')
 def create_dirdf(directory):
     # if not os.path.exists(directory):
     #     return("Error: Directory '" + directory + "' does not exist.")
