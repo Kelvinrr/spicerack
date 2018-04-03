@@ -1,7 +1,6 @@
 Home: Home app/Folder2
 192.168.0.110: thatcher ~/Desktop/Meow2/
-Client2: puto /app/Folder2/
-Client3: meow /app/Folder2/
-Client4: peep /app/Folder2/
-Client5: teet /app/Folder2/
-Client6: fleet /app/Folder2/
+Client3: Daniel /app/Folder2/
+Client4: Kellen /app/Folder2/
+Client5: Ryan /app/Folder2/
+Client6: Tyler /app/Folder2/
