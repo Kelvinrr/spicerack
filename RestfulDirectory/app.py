@@ -9,6 +9,37 @@ import sys
 
 app = Flask(__name__)
 
+
+missions_readable = {   "clem1-l-spice-6-v1.0"       : "Clementine",
+                        "co-s_j_e_v-spice-6-v1.0"    : "Cassini Orbiter",
+                        "dawn-m_a-spice-6-v1.0"      : "DAWN",
+                        "di-c-spice-6-v1.0"          : "Deep Impact",
+                        "dif-c_e_x-spice-6-v1.0"     : "EPOXI",
+                        "ds1-a_c-spice-6-v1.0"       : "Deep Space 1",
+                        "grail-l-spice-6-v1.0"       : "GRAIL",
+                        "hay-a-spice-6-v1.0"         : "Hayabusa",
+                        "jno-j_e_ss-spice-6-v1.0"    : "JUNO",
+                        "lro-l-spice-6-v1.0"         : "Lunar Reconnaissance Orbiter",
+                        "mer1-m-spice-6-v1.0"        : "MER 1 (Opportunity)",
+                        "mer2-m-spice-6-v1.0"        : "MER 2 (Spirit)",
+                        "mess-e_v_h-spice-6-v1.0"    : "Messenger",
+                        "mex-e_m-spice-6-v1.0"       : "Mars Express",
+                        "mgs-m-spice-6-v1.0"         : "Mars Global Surveyor",
+                        "mro-m-spice-6-v1.0"         : "Mars Reconnaissance Orbiter",
+                        "msl-m-spice-6-v1.0"         : "Mars Science Laboratory",
+                        "near-a-spice-6-v1.0"        : "NEAR",
+                        "nh-j_p_ss-spice-6-v1.0"     : "New Horizons",
+                        "ody-m-spice-6-v1.0"         : "Mars Odyssey",
+                        "ro_rl-e_m_a_c-spice-6-v1.0" : "Rosetta",
+                        "ros-e_m_a_c-spice-6-v1.0"   : "Rosetta", # Nothing matching this on naif website
+                        "sdu-c-spice-6-v1.0"         : "Stardust",
+                        "vco-v-spice-6-v1.0"         : "Venus Climate Orbiter",
+                        "vex-e_v-spice-6-v1.0"       : "Venus Express",
+                        "vo1_vo2-m-spice-6-v1.0"     : "Viking Oribiter"}
+
+# Reverse mission dictionary (readable->true)
+missions_true = {value: key for key, value in missions_readable.items()}
+
 # Creates a root based on your directory
 @app.route('/')
 def root_dir():  # pragma: no cover
