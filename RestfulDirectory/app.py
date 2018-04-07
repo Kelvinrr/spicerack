@@ -4,7 +4,6 @@ from flask import jsonify
 import pandas as pd
 import numpy as np
 import farmhash
-import pexpect
 import sys
 
 app = Flask(__name__)
@@ -42,6 +41,9 @@ def update():
     users, ip, filepath = configure()
     return jsonify(Nodes = users)
 
+@app.route('/ssh')
+def ssh():
+    return jsonify(SSH = os.popen('cat /ssh/id_rsa.pub').read())
 
 @app.route('/update/<node>')
 def pull(node):
@@ -100,27 +102,6 @@ def readable_missions(data):
     # Returns your directory laid out as directories and files
     return jsonify(Missions = missions)
 
-# @app.route('/sync')
-# def synchronize_directory():
-#
-#     ip, user, filepath = configure()
-#
-#     #data = create_dirdf(sync[0].strip())
-#     #facility = create_dirdf(sync[1].strip())
-#
-#
-#     #dir1hash = farmhash.hash64(str(data.values))
-#     #facilityhash = farmhash.hash64(str(facility.values))
-#
-#     # if dir1hash == facilityhash:
-#     #     return ("Directories '" + sync[0] + "' and '" + sync[1] + "' SYNCED")
-#     #     # return("Directories are identical")
-#     #
-#     # else:
-#     #     # print("Synchronizing Directories: rsync -av " + data.index.name + "/ " + data.index.name + "/")
-#     rsync(filepath[0], user[1], ip[1], filepath[1])
-#     return("SYNCED " + filepath[0] + " " + "and" + " " + filepath[1])
-
 @app.route('/hash')
 def hash_dataframe():
     user, ip, filepath = configure()
@@ -139,7 +120,7 @@ def make_df():
     return df_json
 
 def rsync(SRC, USER, IP, DEST):
-    os.system("rsync -avP" + SRC + ' ' + USER + '@' + IP + ':' + DEST)
+    os.system("rsync -avP " + SRC + ' ' + USER + '@' + IP + ':' + DEST)
 
 
 def configure():
@@ -175,8 +156,6 @@ def make_user_ip_filepath_dict(user, ip, filepath):
 
 # @app.route('/df')
 def create_dirdf(directory):
-    # if not os.path.exists(directory):
-    #     return("Error: Directory '" + directory + "' does not exist.")
 
     filenames = []
     hashvalues = []
