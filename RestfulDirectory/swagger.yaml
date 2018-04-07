@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   description: "About"
   version: "1.0"
-  title: "Pfeffernusse"
+  title: "Spicerack"
   contact:
     email: "jlaura@usgs.gov"
   license:
@@ -65,7 +65,11 @@ paths:
             items:
               $ref: "#/definitions/Missions"
 
+<<<<<<< Updated upstream
   /missions/naif:
+=======
+  /naif:
+>>>>>>> Stashed changes
     get:
       tags:
       - "missions"
@@ -80,9 +84,15 @@ paths:
           schema:
             type: "array"
             items:
+<<<<<<< Updated upstream
               $ref: "#/definitions/Missions"
 
   /missions/{mission}:
+=======
+              $ref: "#/definitions/Naif"
+
+  /hash:
+>>>>>>> Stashed changes
     get:
       tags:
       - "missions"
@@ -103,11 +113,17 @@ paths:
           schema:
             type: "array"
             items:
+<<<<<<< Updated upstream
               $ref: "#/definitions/Missions"
         400:
           description: "Invalid mission name"
 
   /missions/{mission}/kernels:
+=======
+              $ref: "#/definitions/Hash"
+
+  /dataframe:
+>>>>>>> Stashed changes
     get:
       tags:
       - "kernels"
@@ -208,11 +224,17 @@ paths:
           schema:
             type: "array"
             items:
+<<<<<<< Updated upstream
               $ref: "#/definitions/Metakernels"
         400:
           description: "Invalid tag value"
 
   /missions/{mission}/metakernels/{year}/newest:
+=======
+              $ref: "#/definitions/Update"
+
+  /update/{user}/ssh:
+>>>>>>> Stashed changes
     get:
       tags:
       - "metakernels"
@@ -238,11 +260,17 @@ paths:
           schema:
             type: "array"
             items:
+<<<<<<< Updated upstream
               $ref: "#/definitions/Metakernels"
         400:
           description: "Invalid tag value"
 
   /missions/{mission}/kernels/{kernel}:
+=======
+              $ref: "#/definitions/Update"
+
+  /missions/{mission}:
+>>>>>>> Stashed changes
     get:
       tags:
       - "kernels"
@@ -342,7 +370,11 @@ paths:
         400:
           description: "Invalid tag value"
 
+<<<<<<< Updated upstream
   /missions/{mission}/kernels/{kernel}/files/{file}:
+=======
+  /missions/{mission}/metakernels:
+>>>>>>> Stashed changes
     get:
       tags:
       - "files"
@@ -493,7 +525,11 @@ definitions:
         name:
           type: "string"
 
+<<<<<<< Updated upstream
   Kernels:
+=======
+  Update:
+>>>>>>> Stashed changes
     type: "array"
     items:
       type: "object"
@@ -503,6 +539,7 @@ definitions:
           format: "int64"
         name:
           type: "string"
+<<<<<<< Updated upstream
         newest:
           type: "boolean"
         path:
@@ -525,13 +562,29 @@ definitions:
           $ref: "#/definitions/Missions"
         contents:
           type: "string"
+=======
+
+  Naif:
+    type: "array"
+    items:
+      type: "object"
+
+  Dataframe:
+    type: "array"
+    items:
+      type: "object"
+>>>>>>> Stashed changes
 
   Hash:
     type: "string"
     items:
       type: "object"
 
+<<<<<<< Updated upstream
   Update:
+=======
+  Kernels:
+>>>>>>> Stashed changes
     type: "array"
     items:
       type: "object"
@@ -541,11 +594,20 @@ definitions:
           format: "int64"
         name:
           type: "string"
+<<<<<<< Updated upstream
 
   Dataframe:
     type: "array"
     items:
       type: "object"
+=======
+        newest:
+          type: "boolean"
+        path:
+          type: "string"
+        year:
+          type: "string"
+>>>>>>> Stashed changes
 
   Metakernels:
     type: "array"
