@@ -1,0 +1,7 @@
+Home: meowster /app/Folder1/
+192.168.0.110: thatcher /app/Folder2/
+Client2: puto /app/Folder2/
+Client3: meow /app/Folder2/
+Client4: peep /app/Folder2/
+Client5: teet /app/Folder2/
+Client6: fleet /app/Folder2/
