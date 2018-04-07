@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   description: "About"
   version: "1.0"
-  title: "Pfeffernusse"
+  title: "Spicerack"
   contact:
     email: "jlaura@usgs.gov"
   license:
@@ -48,10 +48,27 @@ paths:
             items:
               $ref: "#/definitions/Hash"
 
-  /missions:
+  /home/naif:
     get:
       tags:
-      - "missions"
+      - "home"
+      summary: "List of available missions in naif format"
+      description: ""
+      operationId: "getNaif"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hash"
+
+  /home/missions:
+    get:
+      tags:
+      - "home"
       summary: "List of available missions (Human-Readable)"
       description: ""
       operationId: "listMissions"
@@ -65,7 +82,7 @@ paths:
             items:
               $ref: "#/definitions/Missions"
 
-  /missions/naif:
+  /home/missions/naif:
     get:
       tags:
       - "missions"
@@ -82,7 +99,7 @@ paths:
             items:
               $ref: "#/definitions/Missions"
 
-  /missions/{mission}:
+  /home/missions/{mission}:
     get:
       tags:
       - "missions"
@@ -107,7 +124,7 @@ paths:
         400:
           description: "Invalid mission name"
 
-  /missions/{mission}/kernels:
+  /home/missions/{mission}/kernels:
     get:
       tags:
       - "kernels"
@@ -132,117 +149,7 @@ paths:
         400:
           description: "Invalid tag value"
 
-  /missions/{mission}/metakernels:
-    get:
-      tags:
-      - "metakernels"
-      summary: "List of available metakernels for a given mission"
-      description: ""
-      operationId: "findMetaKernelsByMission"
-      produces:
-      - "application/json"
-      parameters:
-        - name: mission
-          in: path
-          description: "Name of the missions"
-          required: true
-          type: string
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Metakernels"
-        400:
-          description: "Invalid tag value"
-
-  /missions/{mission}/metakernels/newest:
-      get:
-        tags:
-        - "metakernels"
-        summary: "List of available metakernels for a given mission, sorted by newest"
-        description: ""
-        operationId: "findMetaKernelsByMissionNew"
-        produces:
-        - "application/json"
-        parameters:
-          - name: mission
-            in: path
-            description: "Name of the missions"
-            required: true
-            type: string
-        responses:
-          200:
-            description: "successful operation"
-            schema:
-              type: "array"
-              items:
-                $ref: "#/definitions/Metakernels"
-          400:
-            description: "Invalid tag value"
-
-  /missions/{mission}/metakernels/{year}:
-    get:
-      tags:
-      - "metakernels"
-      summary: "List of available metakernels for a given mission and year"
-      description: ""
-      operationId: "findMetaKernelsByMissionYear"
-      produces:
-      - "application/json"
-      parameters:
-        - name: mission
-          in: path
-          description: "Name of the missions"
-          required: true
-          type: string
-        - name: year
-          in: path
-          description: "Year to be searched"
-          required: true
-          type: integer
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Metakernels"
-        400:
-          description: "Invalid tag value"
-
-  /missions/{mission}/metakernels/{year}/newest:
-    get:
-      tags:
-      - "metakernels"
-      summary: "List of available metakernels for a given mission and year, sorted by newest"
-      description: ""
-      operationId: "findMetaKernelsByMissionYearNew"
-      produces:
-      - "application/json"
-      parameters:
-        - name: mission
-          in: path
-          description: "Name of the missions"
-          required: true
-          type: string
-        - name: year
-          in: path
-          description: "Year to be searched"
-          required: true
-          type: integer
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Metakernels"
-        400:
-          description: "Invalid tag value"
-
-  /missions/{mission}/kernels/{kernel}:
+  /home/missions/{mission}/kernels/{kernel}:
     get:
       tags:
       - "kernels"
@@ -273,7 +180,149 @@ paths:
         400:
           description: "Invalid tag value"
 
-  /missions/{mission}/kernels/{kernel}/files:
+  /home/missions/{mission}/kernels/{kernel}/hash:
+    get:
+      tags:
+      - "kernels"
+      summary: "Hash of a kernel for a given mission"
+      description: ""
+      operationId: "getKernelHash"
+      produces:
+      - "application/json"
+      parameters:
+        - name: mission
+          in: path
+          description: "Name of the missions"
+          required: true
+          type: string
+
+        - name: kernel
+          in: path
+          description: "Kernel type being hashed"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hash"
+        400:
+          description: "Invalid tag value"
+
+  /home/missions/{mission}/metakernels:
+    get:
+      tags:
+      - "metakernels"
+      summary: "List of available metakernels for a given mission"
+      description: ""
+      operationId: "findMetaKernelsByMission"
+      produces:
+      - "application/json"
+      parameters:
+        - name: mission
+          in: path
+          description: "Name of the missions"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Metakernels"
+        400:
+          description: "Invalid tag value"
+
+  /home/missions/{mission}/metakernels/newest:
+      get:
+        tags:
+        - "metakernels"
+        summary: "List of available metakernels for a given mission, sorted by newest"
+        description: ""
+        operationId: "findMetaKernelsByMissionNew"
+        produces:
+        - "application/json"
+        parameters:
+          - name: mission
+            in: path
+            description: "Name of the missions"
+            required: true
+            type: string
+        responses:
+          200:
+            description: "successful operation"
+            schema:
+              type: "array"
+              items:
+                $ref: "#/definitions/Metakernels"
+          400:
+            description: "Invalid tag value"
+
+  /home/missions/{mission}/metakernels/{year}:
+    get:
+      tags:
+      - "metakernels"
+      summary: "List of available metakernels for a given mission and year"
+      description: ""
+      operationId: "findMetaKernelsByMissionYear"
+      produces:
+      - "application/json"
+      parameters:
+        - name: mission
+          in: path
+          description: "Name of the missions"
+          required: true
+          type: string
+        - name: year
+          in: path
+          description: "Year to be searched"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Metakernels"
+        400:
+          description: "Invalid tag value"
+
+  /home/missions/{mission}/metakernels/{year}/newest:
+    get:
+      tags:
+      - "metakernels"
+      summary: "List of available metakernels for a given mission and year, sorted by newest"
+      description: ""
+      operationId: "findMetaKernelsByMissionYearNew"
+      produces:
+      - "application/json"
+      parameters:
+        - name: mission
+          in: path
+          description: "Name of the missions"
+          required: true
+          type: string
+        - name: year
+          in: path
+          description: "Year to be searched"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Metakernels"
+        400:
+          description: "Invalid tag value"
+
+
+  /home/missions/{mission}/kernels/{kernel}/files:
     get:
       tags:
       - "files"
@@ -301,37 +350,6 @@ paths:
           required: true
           type: string
 
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Hash"
-        400:
-          description: "Invalid tag value"
-
-  /missions/{mission}/kernels/{kernel}/hash:
-    get:
-      tags:
-      - "kernels"
-      summary: "Hash of a kernel for a given mission"
-      description: ""
-      operationId: "getKernelHash"
-      produces:
-      - "application/json"
-      parameters:
-        - name: mission
-          in: path
-          description: "Name of the missions"
-          required: true
-          type: string
-
-        - name: kernel
-          in: path
-          description: "Kernel type being hashed"
-          required: true
-          type: string
       responses:
         200:
           description: "successful operation"
@@ -405,6 +423,120 @@ paths:
         - name: file
           in: path
           description: "Name of the file being hashed"
+          required: true
+          type: string
+
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hash"
+        400:
+          description: "Invalid tag value"
+
+  /missions/{mission}/kernels/{kernel}/files/{file}/filepath:
+    get:
+      tags:
+      - "files"
+      summary: "Filepath of a given file"
+      description: ""
+      operationId: "getFilePath"
+      produces:
+      - "application/json"
+      parameters:
+        - name: mission
+          in: path
+          description: "Name of the mission"
+          required: true
+          type: string
+
+        - name: kernel
+          in: path
+          description: "Kernel type being viewed"
+          required: true
+          type: string
+
+        - name: file
+          in: path
+          description: "Name of the file being hashed"
+          required: true
+          type: string
+
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hash"
+        400:
+          description: "Invalid tag value"
+
+  /missions/{mission}/kernels/{kernel}/files/{file}/year:
+    get:
+      tags:
+      - "files"
+      summary: "Year for the given file"
+      description: ""
+      operationId: "getFileYear"
+      produces:
+      - "application/json"
+      parameters:
+        - name: mission
+          in: path
+          description: "Name of the mission"
+          required: true
+          type: string
+
+        - name: kernel
+          in: path
+          description: "Kernel type being viewed"
+          required: true
+          type: string
+
+        - name: file
+          in: path
+          description: "Name of the file"
+          required: true
+          type: string
+
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hash"
+        400:
+          description: "Invalid tag value"
+
+  /missions/{mission}/kernels/{kernel}/files/{file}/year/newest:
+    get:
+      tags:
+      - "files"
+      summary: "Newest file for a given year"
+      description: ""
+      operationId: "getFileByYear"
+      produces:
+      - "application/json"
+      parameters:
+        - name: mission
+          in: path
+          description: "Name of the mission"
+          required: true
+          type: string
+
+        - name: kernel
+          in: path
+          description: "Kernel type being viewed"
+          required: true
+          type: string
+
+        - name: file
+          in: path
+          description: "Name of the file"
           required: true
           type: string
 
