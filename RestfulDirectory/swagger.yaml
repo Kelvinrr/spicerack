@@ -15,6 +15,23 @@ schemes:
 - "https"
 paths:
   /home:
+      get:
+        tags:
+        - "home"
+        summary: "List of next available endpoints from home directory"
+        description: ""
+        operationId: "getHomeEndpoints"
+        produces:
+        - "application/json"
+        responses:
+          200:
+            description: "successful operation"
+            schema:
+              type: "array"
+              items:
+                $ref: "#/definitions/Dataframe"
+
+  /home/dataframe:
     get:
       tags:
       - "home"
@@ -103,9 +120,9 @@ paths:
     get:
       tags:
       - "missions"
-      summary: "List of available kernel types by missions"
+      summary: "List of the next available endpoints for a given mission"
       description: "Get a listing of available kernel types by missions"
-      operationId: "findMission"
+      operationId: "findMissioEndpoints"
       parameters:
         - name: mission
           in: path
@@ -153,9 +170,9 @@ paths:
     get:
       tags:
       - "kernels"
-      summary: "List of available files for a given mission/kernel"
+      summary: "List of the next available endpoints for a given mission/kernel"
       description: ""
-      operationId: "getFilesByKernel"
+      operationId: "getKernelEndpoints"
       produces:
       - "application/json"
       parameters:
