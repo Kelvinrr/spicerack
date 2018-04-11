@@ -1,25 +1,24 @@
 import connexion
 import six
-import os
+
 from swagger_server.models.update import Update  # noqa: E501
-from swagger_server import util
-from swagger_server import configure
+from swagger_server import util, configure
 from flask import jsonify
 
 
 
-
-def get_public_ssh(user):  # noqa: E501
-    """Public SSH Key of User
+def get_ssh_key(user):  # noqa: E501
+    """Returns public SSH key
 
      # noqa: E501
 
-    :param user: Return SSH Public Key
+    :param user: Get Public SSH Key
     :type user: str
 
     :rtype: List[Update]
     """
     return jsonify(SSH = os.popen('cat /root/.ssh/id_rsa.pub').read())
+
 
 
 def list_nodes():  # noqa: E501
@@ -28,11 +27,24 @@ def list_nodes():  # noqa: E501
      # noqa: E501
 
 
-    :rtype: List[Update]
+    :rtype: object
     """
-
     users, ip, filepath = configure()
     return jsonify(Nodes = users)
+
+
+def next_places(user):  # noqa: E501
+    """List of the next available endpoints for a given node
+
+     # noqa: E501
+
+    :param user: See where a user can navigate to next
+    :type user: str
+
+    :rtype: List[Update]
+    """
+    endpoints = ['/ssh', '/sync']
+    return endpoints
 
 
 def sync_nodes(user):  # noqa: E501
@@ -45,7 +57,6 @@ def sync_nodes(user):  # noqa: E501
 
     :rtype: List[Update]
     """
-
     users, ip, filepath = configure()
     users_info = make_user_ip_filepath_dict(users, ip, filepath)
 

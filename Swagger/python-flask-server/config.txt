@@ -1,4 +1,4 @@
-Home: Home /usr/src/app/clsp_1000_940126_940507/
+Home: Home /app/
 192.168.0.112: thatcher ~/Desktop/Capstone/
 Client3: Daniel /app/Folder2/
 Client4: Kellen /app/Folder2/
