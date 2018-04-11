@@ -65,3 +65,7 @@ missions_readable = {   "clem1-l-spice-6-v1.0"       : "clementine",
                         "vco-v-spice-6-v1.0"         : "venus_climate_orbiter",
                         "vex-e_v-spice-6-v1.0"       : "venus_express",
                         "vo1_vo2-m-spice-6-v1.0"     : "viking_orbiter"}
+
+
+# Reverse mission translations (readable->true)
+missions_true = {value: key for key, value in missions_readable.items()}
