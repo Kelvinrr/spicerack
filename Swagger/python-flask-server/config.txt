@@ -1,6 +1,6 @@
-Home: Home /Users/thatcher/Desktop/Classes/Capstone/SpiceData/
-192.168.0.112: thatcher ~/Desktop/Sample-Mission/
-Client3: Daniel /spicedata/Folder2/
-Client4: Kellen /spicedata/Folder2/
-Client5: Ryan /spicedata/Folder2/
-Client6: Tyler /spicedata/Folder2/
+Home: Home /path/to/spice/data/
+Client1-IP: Username-of-computer /path/to/spice/data/
+Client2-IP: Daniel /path/to/spice/data/
+Client3-IP: Kellen /path/to/spice/data/
+Client4-IP: Ryan /path/to/spice/data/
+Client5-IP: Tyler /path/to/spice/data/
