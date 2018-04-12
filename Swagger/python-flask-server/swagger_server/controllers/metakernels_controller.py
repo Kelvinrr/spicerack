@@ -6,6 +6,7 @@ from swagger_server.models.hash import Hash  # noqa: E501
 from swagger_server.models.raw import Raw  # noqa: E501
 from swagger_server import util, missions_true, create_dirdf
 import os
+import farmhash
 
 
 def get_metakernels(mission):  # noqa: E501
@@ -20,7 +21,7 @@ def get_metakernels(mission):  # noqa: E501
     """
     data_dir = []
     kerns = []
-    get_kernels = '/app/{}'.format(missions_true[mission])
+    get_kernels = '/spicedata/{}'.format(missions_true[mission])
 
     for kern in os.listdir(get_kernels):
         if os.path.isfile(os.path.join(get_kernels, kern)):
@@ -29,7 +30,7 @@ def get_metakernels(mission):  # noqa: E501
             data_dir.append(kern)
 
 
-    return os.listdir('/app/{}/{}/extras/mk'.format(missions_true[mission], data_dir[0]))
+    return os.listdir('/spicedata/{}/{}/extras/mk'.format(missions_true[mission], data_dir[0]))
 
 
 def get_mk_hash(mission, file):  # noqa: E501
@@ -44,7 +45,18 @@ def get_mk_hash(mission, file):  # noqa: E501
 
     :rtype: List[Hash]
     """
-    return 'do some magic!'
+    data_dir = []
+    kerns = []
+    get_kernels = '/spicedata/{}'.format(missions_true[mission])
+
+    for kern in os.listdir(get_kernels):
+        if os.path.isfile(os.path.join(get_kernels, kern)):
+            continue
+        else:
+            data_dir.append(kern)
+
+    dataframe = create_dirdf('/spicedata/{}/{}/extras/mk/{}'.format(missions_true[mission], data_dir[0], file).strip())
+    return "The hash of {} is: {}".format('/spicedata/{}/{}/extras/mk/{}'.format(missions_true[mission], data_dir[0], file), str(farmhash.hash64((str(dataframe.values)))))
 
 
 def get_mk_newest(mission):  # noqa: E501

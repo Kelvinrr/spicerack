@@ -18,7 +18,7 @@ def get_home_naif():  # noqa: E501
     """
     human_read = []
 
-    for miss in os.listdir('/app/'):
+    for miss in os.listdir('/spicedata/'):
         if miss[0] == '.':
             continue
         else:
@@ -62,7 +62,7 @@ def get_missions():  # noqa: E501
     :rtype: List[Missions]
     """
     human_read = []
-    for miss in os.listdir('/app/'):
+    for miss in os.listdir('/spicedata/'):
         if miss[0] == '.':
             continue
         else:

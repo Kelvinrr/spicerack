@@ -1,6 +1,6 @@
-Home: Home /app/
-192.168.0.112: thatcher ~/Desktop/Capstone/
-Client3: Daniel /app/Folder2/
-Client4: Kellen /app/Folder2/
-Client5: Ryan /app/Folder2/
-Client6: Tyler /app/Folder2/
+Home: Home /Users/thatcher/Desktop/Classes/Capstone/SpiceData/
+192.168.0.112: thatcher ~/Desktop/Sample-Mission/
+Client3: Daniel /spicedata/Folder2/
+Client4: Kellen /spicedata/Folder2/
+Client5: Ryan /spicedata/Folder2/
+Client6: Tyler /spicedata/Folder2/

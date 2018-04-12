@@ -1,11 +1,13 @@
 import os
+import io
 import pandas as pd
-import sys
+import numpy as np
 import farmhash
+import time
 
 # Parses config file for user settings
 def configure():
-    with open('config.txt', 'r') as f:
+    with open('/swaggerapp/config.txt', 'r') as f:
         ip = []
         user = []
         filepath  = []
@@ -17,7 +19,10 @@ def configure():
             filepath.append(research[2].strip())
         return user, ip, filepath
 
+
 def create_dirdf(directory):
+    if not os.path.exists(directory):
+        return "Error: Directory '" + directory + "' does not exist."
 
     filenames = []
     hashvalues = []
@@ -26,14 +31,51 @@ def create_dirdf(directory):
         for name in files:
             if not name[0] == ".": # ignore hidden files
                 filepath = os.path.join(root, name)
-                # file = open(filepath).read()
+
+                # hash full file contents
+                # note: we dont know the encoding scheme for the spice data files, so we just read as binary
+                # the labels and headers are all ascii, but the kernels are a mix of ascii and ???
+                file = str(io.open(filepath,'rb').read())
                 filenames.append(filepath.split(directory, 1)[1])
-                with open(filepath, 'r') as f:
-                    f = f.read()
-                hashvalues.append(farmhash.hash64(f))
+                hashvalues.append(farmhash.hash64(file))
+
+                # parse file creation date
     df = pd.DataFrame(data=hashvalues, index = filenames, columns = ["Hash"])
     df.index.name = directory
     return df
+
+def create_datedf(directory):
+    if not os.path.exists(directory):
+        return "Error: Directory '" + directory + "' does not exist."
+
+    fnames = []
+    dates = []
+
+    for root, subdir, files in os.walk(directory):
+        for name in files:
+            if name.endswith(".lbl"): # only parse labels
+                filepath = os.path.join(root, name)
+                file = io.open(filepath,'r')
+                line = file.readline()
+                product_id = ""
+                product_time = ""
+
+                # check for file kernel being pointed to
+                while line:
+                    if line.startswith("PRODUCT_ID"):
+                        product_id = line.split("= ")[1].strip()
+                    if line.startswith("PRODUCT_CREATION_TIME"):
+                        product_time = line.split("= ")[1].strip()
+                    line = file.readline()
+
+                if product_id and product_time:
+                    fnames.append(product_id)
+                    dates.append(product_time)
+
+    df = pd.DataFrame(data=dates, index = fnames, columns = ["Hash"])
+    df.index.name = directory
+    return df
+
 
 def make_user_ip_filepath_dict(user, ip, filepath):
     zipped = list(zip(ip, filepath))

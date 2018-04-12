@@ -15,7 +15,9 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . /usr/src/app/
 
-COPY . /app/
+COPY . /spicedata/
+
+COPY . /swaggerapp/
 
 ADD . /root/.ssh/
 

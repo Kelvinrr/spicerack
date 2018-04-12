@@ -4,6 +4,7 @@ import six
 from swagger_server.models.update import Update  # noqa: E501
 from swagger_server import util, configure
 from flask import jsonify
+import os
 
 
 
@@ -61,10 +62,10 @@ def sync_nodes(user):  # noqa: E501
     users_info = make_user_ip_filepath_dict(users, ip, filepath)
 
     rsync(users_info['Home'][1], user, users_info[user][0], users_info[user][1])
-    return("SYNCED " + users_info['Home'][0] + " " + "and" + " " + users_info[user][1])
+    return("SYNCED " + users_info['Home'][1] + " " + "and" + " " + users_info[user][1])
 
 def rsync(SRC, USER, IP, DEST):
-    os.system("rsync -avP " + SRC + ' ' + USER + '@' + IP + ':' + DEST)
+    os.system("rsync -avP {}@{}:{} {}".format(USER, IP, DEST, SRC))
 
 def make_user_ip_filepath_dict(user, ip, filepath):
     zipped = list(zip(ip, filepath))
