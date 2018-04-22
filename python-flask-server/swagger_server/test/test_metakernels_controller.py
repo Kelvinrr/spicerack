@@ -6,13 +6,23 @@ from flask import json
 from six import BytesIO
 
 from swagger_server.models.filelist import Filelist  # noqa: E501
-from swagger_server.models.hash import Hash  # noqa: E501
 from swagger_server.models.raw import Raw  # noqa: E501
 from swagger_server.test import BaseTestCase
 
 
 class TestMetakernelsController(BaseTestCase):
     """MetakernelsController integration test stubs"""
+
+    def test_get_metakernel_dict(self):
+        """Test case for get_metakernel_dict
+
+        Hash, Path and Links for a given metakernel file
+        """
+        response = self.client.open(
+            '/api/1.0/home/missions/{mission}/metakernels/{file}'.format(mission='mission_example', file='file_example'),
+            method='GET')
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
 
     def test_get_metakernels(self):
         """Test case for get_metakernels
@@ -25,35 +35,13 @@ class TestMetakernelsController(BaseTestCase):
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
-    def test_get_mk_hash(self):
-        """Test case for get_mk_hash
-
-        Hashed contents of a given metakernel file
-        """
-        response = self.client.open(
-            '/api/1.0/home/missions/{mission}/metakernels/{file}/hash'.format(mission='mission_example', file='file_example'),
-            method='GET')
-        self.assert200(response,
-                       'Response body is : ' + response.data.decode('utf-8'))
-
     def test_get_mk_newest(self):
         """Test case for get_mk_newest
 
-        Newest metakernels for a given mission
+        Newest metakernel for a given mission
         """
         response = self.client.open(
             '/api/1.0/home/missions/{mission}/metakernels/newest'.format(mission='mission_example'),
-            method='GET')
-        self.assert200(response,
-                       'Response body is : ' + response.data.decode('utf-8'))
-
-    def test_get_mk_path(self):
-        """Test case for get_mk_path
-
-        Filepath of a given metakernel file
-        """
-        response = self.client.open(
-            '/api/1.0/home/missions/{mission}/metakernels/{file}/path'.format(mission='mission_example', file='file_example'),
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -75,7 +63,7 @@ class TestMetakernelsController(BaseTestCase):
         List of available metakernels for a given mission and year
         """
         response = self.client.open(
-            '/api/1.0/home/missions/{mission}/metakernels/{year}'.format(mission='mission_example', year=56),
+            '/api/1.0/home/missions/{mission}/metakernels/years/{year}'.format(mission='mission_example', year=56),
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -86,7 +74,18 @@ class TestMetakernelsController(BaseTestCase):
         Newest metakernels for a given mission and year
         """
         response = self.client.open(
-            '/api/1.0/home/missions/{mission}/metakernels/{year}/newest'.format(mission='mission_example', year=56),
+            '/api/1.0/home/missions/{mission}/metakernels/years/{year}/newest'.format(mission='mission_example', year=56),
+            method='GET')
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
+
+    def test_get_mk_years(self):
+        """Test case for get_mk_years
+
+        List of years represented in the versions of metakernels for a given mission
+        """
+        response = self.client.open(
+            '/api/1.0/home/missions/{mission}/metakernels/years'.format(mission='mission_example'),
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))

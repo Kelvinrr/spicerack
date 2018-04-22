@@ -248,12 +248,12 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/newest:
+  /home/missions/{mission}/metakernels/{file}:
     get:
       tags:
       - "metakernels"
-      summary: "Newest metakernels for a given mission"
-      operationId: "get_mk_newest"
+      summary: "Hash, Path and Links for a given metakernel file"
+      operationId: "get_metakernel_dict"
       produces:
       - "application/json"
       parameters:
@@ -261,60 +261,10 @@ paths:
         in: "path"
         required: true
         type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Filelist"
-        400:
-          description: "Invalid tag value"
-      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/{year}:
-    get:
-      tags:
-      - "metakernels"
-      summary: "List of available metakernels for a given mission and year"
-      operationId: "get_mk_year"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "mission"
+      - name: "file"
         in: "path"
         required: true
         type: "string"
-      - name: "year"
-        in: "path"
-        required: true
-        type: "integer"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Filelist"
-        400:
-          description: "Invalid tag value"
-      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/{year}/newest:
-    get:
-      tags:
-      - "metakernels"
-      summary: "Newest metakernels for a given mission and year"
-      operationId: "get_mk_year_newest"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "mission"
-        in: "path"
-        required: true
-        type: "string"
-      - name: "year"
-        in: "path"
-        required: true
-        type: "integer"
       responses:
         200:
           description: "successful operation"
@@ -353,20 +303,16 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/{file}/hash:
+  /home/missions/{mission}/metakernels/newest:
     get:
       tags:
       - "metakernels"
-      summary: "Hashed contents of a given metakernel file"
-      operationId: "get_mk_hash"
+      summary: "Newest metakernel for a given mission"
+      operationId: "get_mk_newest"
       produces:
       - "application/json"
       parameters:
       - name: "mission"
-        in: "path"
-        required: true
-        type: "string"
-      - name: "file"
         in: "path"
         required: true
         type: "string"
@@ -376,16 +322,17 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/Hash"
+              $ref: "#/definitions/Filelist"
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/{file}/path:
+  /home/missions/{mission}/metakernels/years:
     get:
       tags:
       - "metakernels"
-      summary: "Filepath of a given metakernel file"
-      operationId: "get_mk_path"
+      summary: "List of years represented in the versions of metakernels for a given\
+        \ mission"
+      operationId: "get_mk_years"
       produces:
       - "application/json"
       parameters:
@@ -393,10 +340,60 @@ paths:
         in: "path"
         required: true
         type: "string"
-      - name: "file"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
+  /home/missions/{mission}/metakernels/years/{year}:
+    get:
+      tags:
+      - "metakernels"
+      summary: "List of available metakernels for a given mission and year"
+      operationId: "get_mk_year"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
         in: "path"
         required: true
         type: "string"
+      - name: "year"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
+  /home/missions/{mission}/metakernels/years/{year}/newest:
+    get:
+      tags:
+      - "metakernels"
+      summary: "Newest metakernels for a given mission and year"
+      operationId: "get_mk_year_newest"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "year"
+        in: "path"
+        required: true
+        type: "integer"
       responses:
         200:
           description: "successful operation"
