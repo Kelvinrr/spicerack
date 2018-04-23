@@ -80,7 +80,7 @@ def populate_spicedb():
                 # if it already exists, we want to update the hash, otherwise, we insert the full row
                 c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(mn=missions_readable[mis], kn=ker, fn=file))
                 row = c.fetchall()
-                if row != None:
+                if row != []:
                     if row[0][4] != fhash:
                         c.execute("UPDATE SPICE SET Hash = '{hn}' WHERE Mission ='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(hn=fhash, mn=missions_readable[mis], kn=ker, fn=file))
                 else:
@@ -96,13 +96,15 @@ def populate_spicedb():
                     continue
             fhash = farmhash.hash64(str(io.open(fpath+file,'rb').read()))
 
+            # delish copypaste - pls get rid of me
             c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='mk' AND File='{fn}'".format(mn=missions_readable[mis], fn=file))
-                row = c.fetchall()
-                if row != None and row[0][4] != fhash:
+            row = c.fetchall()
+            if row != []:
+                if row[0][4] != fhash:
                     c.execute("UPDATE SPICE SET Hash = '{hn}' WHERE Mission ='{mn}' AND Kernel='mk' AND File='{fn}'".format(hn=fhash, mn=missions_readable[mis], fn=file))
-                else:
-                    c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
-                          .format(mn=missions_readable[mis], kn='mk', fn=file, fp=fpath, fh=fhash, new=0))
+            else:
+                c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
+                      .format(mn=missions_readable[mis], kn='mk', fn=file, fp=fpath, fh=fhash, new=0))
             
     conn.commit()
     conn.close()
