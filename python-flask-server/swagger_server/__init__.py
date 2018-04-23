@@ -64,20 +64,30 @@ def populate_spicedb():
     c.execute("CREATE TABLE IF NOT EXISTS SPICE (Mission TEXT, Kernel TEXT, File TEXT, Path TEXT, Hash TEXT, Newest INTEGER )")
 
     # ooh spicy loops ~
-    # we expect a specific directory structure: /spicedata -> /{mission} -> /data -> /{kernel} -> {file}
+    # we expect a specific directory structure: /spicedata/{mission}/data/{kernel}/{file}
+    print('Begin Indexing of SPICE data from /spicedata directory')
     for mis in [m for m in os.listdir('/spicedata') if not m[0] == '.']:
         for ker in [k for k in os.listdir('/spicedata/'+mis+'/data') if not k[0] == '.']:
+            print('Indexing Kernel [' + ker +  '] for Mission [' + mis + ']')
             for file in [f for f in os.listdir('/spicedata/'+mis+'/data/'+ker) if not f[0] == '.']:
 
                 fpath = '/spicedata/'+mis+'/data/'+ker+'/'
-                if os.path.isdir(fpath+file):
+                if os.path.isdir(fpath+file): # cant hash a directory... and we arent expecting any at this level
                     continue
                 fhash = farmhash.hash64(str(io.open(fpath+file,'rb').read())) # spice data encoding is mixed, so read as binary
 
-                c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
+                # check if the file already exists for a certain mission and kernel
+                # if it already exists, we want to update the hash, otherwise, we insert the full row
+                c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(mn=missions_readable[mis], kn=ker, fn=file))
+                row = c.fetchall()
+                if row != None and row[0][4] != fhash:
+                    c.execute("UPDATE SPICE SET Hash = '{hn}' WHERE Mission ='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(hn=fhash, mn=missions_readable[mis], kn=ker, fn=file))
+                else:
+                    c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
                           .format(mn=missions_readable[mis], kn=ker, fn=file, fp=fpath, fh=fhash, new=0))
 
-        # grab metakernel files: /spicedata/{mission}/extras/mk/{file}
+        # grab metakernel files: /spicedata/{mission}/extras/mk/{file}... same process (Is there a way to combine regular kernels and metakernels logic?)
+        print('Indexing Metakernels for Mission [' + mis + ']')
         for file in [f for f in os.listdir('/spicedata/'+mis+'/extras/mk') if not file[0] == '.']:
 
             fpath = '/spicedata/'+mis+'/extras/mk/'
@@ -85,10 +95,18 @@ def populate_spicedb():
                     continue
             fhash = farmhash.hash64(str(io.open(fpath+file,'rb').read()))
 
-            c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
-                          .format(mn=missions_readable[mis], kn=ker, fn=file, fp=fpath, fh=fhash, new=0))
+            c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='mk' AND File='{fn}'".format(mn=missions_readable[mis], fn=file))
+                row = c.fetchall()
+                if row != None and row[0][4] != fhash:
+                    c.execute("UPDATE SPICE SET Hash = '{hn}' WHERE Mission ='{mn}' AND Kernel='mk' AND File='{fn}'".format(hn=fhash, mn=missions_readable[mis], fn=file))
+                else:
+                    c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
+                          .format(mn=missions_readable[mis], kn='mk', fn=file, fp=fpath, fh=fhash, new=0))
+            
     conn.commit()
     conn.close()
+    print('Finished Indexing of SPICE data, stored in /spicedata/.spicedb.sqlite')
+
 
 
 def create_dirdf(directory):
