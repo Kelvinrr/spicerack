@@ -1,3 +1,6 @@
+# For an example on how to run this docker container, 
+# please check the buildDocker.sh script... or just configure and run the script!
+
 FROM python:3-alpine
 
 RUN echo "http://dl-8.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories

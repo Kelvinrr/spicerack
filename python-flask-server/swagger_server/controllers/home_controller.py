@@ -5,7 +5,7 @@ from swagger_server.models.dataframe import Dataframe  # noqa: E501
 from swagger_server.models.endpoints import Endpoints  # noqa: E501
 from swagger_server.models.hash import Hash  # noqa: E501
 from swagger_server.models.update import Update  # noqa: E501
-from swagger_server import util
+from swagger_server import util, populate_spicedb
 
 
 def get_home_dataframe():  # noqa: E501
@@ -49,4 +49,4 @@ def refresh_db():  # noqa: E501
 
     :rtype: List[Update]
     """
-    return 'do some magic!'
+    populate_spicedb()

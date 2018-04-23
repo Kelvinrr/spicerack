@@ -1,4 +1,4 @@
-Home: Home /path/to/spice/data/
+Home: Home ~/Desktop/school/spicerack_withdb/test_concepts/sqlite_db/spice_data
 Client1-IP: Username-of-computer /path/to/spice/data/
 Client2-IP: Daniel /path/to/spice/data/
 Client3-IP: Kellen /path/to/spice/data/

@@ -10,7 +10,7 @@ info:
     name: "UnLicense"
     url: "http://unlicense.org/"
 host: "astrogeology.wr.usgs.gov"
-basePath: "/api/1.0"
+basePath: "/api/"
 schemes:
 - "http"
 - "https"
