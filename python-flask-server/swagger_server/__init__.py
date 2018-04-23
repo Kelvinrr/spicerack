@@ -80,8 +80,9 @@ def populate_spicedb():
                 # if it already exists, we want to update the hash, otherwise, we insert the full row
                 c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(mn=missions_readable[mis], kn=ker, fn=file))
                 row = c.fetchall()
-                if row != None and row[0][4] != fhash:
-                    c.execute("UPDATE SPICE SET Hash = '{hn}' WHERE Mission ='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(hn=fhash, mn=missions_readable[mis], kn=ker, fn=file))
+                if row != None:
+                    if row[0][4] != fhash:
+                        c.execute("UPDATE SPICE SET Hash = '{hn}' WHERE Mission ='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(hn=fhash, mn=missions_readable[mis], kn=ker, fn=file))
                 else:
                     c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
                           .format(mn=missions_readable[mis], kn=ker, fn=file, fp=fpath, fh=fhash, new=0))
