@@ -7,6 +7,7 @@ import time
 import sqlite3
 import json
 
+
 missions_readable = {   "clem1-l-spice-6-v1.0"       : "clementine",
                         "co-s_j_e_v-spice-6-v1.0"    : "cassini_orbiter",
                         "dawn-m_a-spice-6-v1.0"      : "dawn",
@@ -27,12 +28,11 @@ missions_readable = {   "clem1-l-spice-6-v1.0"       : "clementine",
                         "near-a-spice-6-v1.0"        : "near",
                         "nh-j_p_ss-spice-6-v1.0"     : "new_horizons",
                         "ody-m-spice-6-v1.0"         : "mars_odyssey",
-                        "ro_rl-e_m_a_c-spice-6-v1.0" : "rosetta",
-                        "ros-e_m_a_c-spice-6-v1.0"   : "rosetta", # Nothing matching this on naif website
+                        "ros-e_m_a_c-spice-6-v1.0"   : "rosetta",
                         "sdu-c-spice-6-v1.0"         : "stardust",
                         "vco-v-spice-6-v1.0"         : "venus_climate_orbiter",
                         "vex-e_v-spice-6-v1.0"       : "venus_express",
-                        "vo1_vo2-m-spice-6-v1.0"     : "viking_orbiter"}
+                        "vo1_vo2-m-spice-6-v1.0"     : "viking_orbiter"   }
 
 # Reverse mission translations (readable->true)
 missions_true = {value: key for key, value in missions_readable.items()}
@@ -55,6 +55,10 @@ def configure():
 
 # populates spice database with file info starting from /spicedata
 # the spice database will be a hidden file: /spicedata/.spicedb.sqlite
+# TODO: if a file is deleted, it should be removed from the db... but would that require confirming that all files still exist?
+# ALSO: if we are reading the whole file as binary and hashing anyways, maybe we should just delete the whole db and repopulate every time???
+#       there isnt a lot of value to knowing that we have changed a hash.. unless we want to report that the file has changed,
+#       which i think we can assume the user would know about
 def populate_spicedb():
 
     # atm we only use one table in the database - mostly just for storage -> quick access
@@ -63,16 +67,16 @@ def populate_spicedb():
     c = conn.cursor()
     c.execute("CREATE TABLE IF NOT EXISTS SPICE (Mission TEXT, Kernel TEXT, File TEXT, Path TEXT, Hash TEXT, Newest INTEGER )")
 
-    # ooh spicy loops ~
+    # ooh spicy loops ~ maybe we should just os.walk this
     # we expect a specific directory structure: /spicedata/{mission}/data/{kernel}/{file}
     print('Begin Indexing of SPICE data from /spicedata directory')
     for mis in [m for m in os.listdir('/spicedata') if not m[0] == '.']:
         for ker in [k for k in os.listdir('/spicedata/'+mis+'/data') if not k[0] == '.']:
-            print('Indexing Kernel [' + ker +  '] for Mission [' + mis + ']')
+            print('Indexing Kernel [' + ker +  '] for Mission [' + missions_readable[mis] + ']')
             for file in [f for f in os.listdir('/spicedata/'+mis+'/data/'+ker) if not f[0] == '.']:
 
                 fpath = '/spicedata/'+mis+'/data/'+ker+'/'
-                if os.path.isdir(fpath+file): # cant hash a directory... and we arent expecting any at this level
+                if os.path.isdir(fpath+file): # cant hash a directory... although we arent expecting any at this level
                     continue
                 fhash = farmhash.hash64(str(io.open(fpath+file,'rb').read())) # spice data encoding is mixed, so read as binary
 
@@ -88,7 +92,7 @@ def populate_spicedb():
                           .format(mn=missions_readable[mis], kn=ker, fn=file, fp=fpath, fh=fhash, new=0))
 
         # grab metakernel files: /spicedata/{mission}/extras/mk/{file}... same process (Is there a way to combine regular kernels and metakernels logic?)
-        print('Indexing Metakernels for Mission [' + mis + ']')
+        print('Indexing Metakernels for Mission [' + missions_readable[mis] + ']')
         for file in [f for f in os.listdir('/spicedata/'+mis+'/extras/mk') if not file[0] == '.']:
 
             fpath = '/spicedata/'+mis+'/extras/mk/'
@@ -109,7 +113,6 @@ def populate_spicedb():
     conn.commit()
     conn.close()
     print('Finished Indexing of SPICE data, stored in /spicedata/.spicedb.sqlite')
-
 
 
 def create_dirdf(directory):
@@ -173,3 +176,5 @@ def create_datedf(directory):
 def make_user_ip_filepath_dict(user, ip, filepath):
     zipped = list(zip(ip, filepath))
     return dict(zip(user, zipped))
+
+populate_spicedb()
