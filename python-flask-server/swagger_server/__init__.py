@@ -53,13 +53,45 @@ def configure():
         return user, ip, filepath
 
 
+# the good one
+def populate_spicedb():
+    
+    if os.path.exists('/spicedata/.spicedb.sqlite'):
+        os.remove('/spicedata/.spicedb.sqlite')
+        
+    # atm we only use one table in the database - mostly just for storage -> quick access
+    # database format will be: | Mission | Kernel | File | Path | Hash | Newest |
+    conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
+    c = conn.cursor()
+    c.execute("CREATE TABLE SPICE (Mission TEXT, Kernel TEXT, File TEXT, Path TEXT, Hash TEXT, Newest INTEGER )")
+    
+    for root, subdir, files in os.walk('/spicedata'):
+        for name in files: 
+            if name[0] == '.':
+                continue
+
+            split = root.split('/') # indexes inside the docker container will be one more, as we start at root and split on '/'
+            if len(split) >=5 and (split[4] in ['data', 'extras']):
+                fhash = farmhash.hash64(str(io.open(root+'/'+name,'rb').read())) # spice data encoding is mixed, so read as binary
+                c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
+                          .format(mn=missions_readable[split[2]], kn=split[5], fn=name, fp=root, fh=fhash, new=0))
+            
+    conn.commit()
+    conn.close()
+    print('Finished Indexing of SPICE data, stored in /spicedata/.spicedb.sqlite')
+
+
+#
+# Your scientists were so preoccupied with whether or not they could, they didn’t stop to think if they should
+# this is terrible  ~ ~ ~ ~ ~ ~
+#
 # populates spice database with file info starting from /spicedata
 # the spice database will be a hidden file: /spicedata/.spicedb.sqlite
 # TODO: if a file is deleted, it should be removed from the db... but would that require confirming that all files still exist?
 # ALSO: if we are reading the whole file as binary and hashing anyways, maybe we should just delete the whole db and repopulate every time???
 #       there isnt a lot of value to knowing that we have changed a hash.. unless we want to report that the file has changed,
 #       which i think we can assume the user would know about
-def populate_spicedb():
+def populate_spicedb_ugly():
 
     # atm we only use one table in the database - mostly just for storage -> quick access
     # database format will be: | Mission | Kernel | File | Path | Hash | Newest |
