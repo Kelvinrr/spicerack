@@ -75,12 +75,10 @@ def populate_spicedb():
             if name[0] == '.': # skip hidden files
                 continue
 
-            # split format will be: ['', 'spicedata', 'clem1-l-spice-6-v1.0', 'clsp_1000', 'data', 'ck']
-            split = root.split('/')
+            split = root.split('/') # full split format will be: ['', 'spicedata', 'clem1-l-spice-6-v1.0', 'clsp_1000', 'data', 'ck']
             if len(split) >=5 and (split[4] in ['data', 'extras']): # we only care about kernel and mk files, which are always 4 dirs down 
 
-                # there is probs a wayyyy nicer way to do this, but it keeps the comparisons to a minimum
-                # big issue: we cant guarantee that the -info.txt file will be the first to be read.... print will happen in the middle of the kernel directory
+                # issue: cant be sure that the -info.txt file will read first.... print could happen in the middle of the kernel directory
                 if name.endswith('info.txt'): # we can expect a single ckinfo.txt, mkinfo.txt, etc in every kernel directory
                     print(datetime.now().strftime("%H:%M:%S") + ' - Indexing Kernel [' + split[5] + '] for Mission [' + missions_readable[split[2]] + ']')
                     continue 
