@@ -54,31 +54,37 @@ def configure():
         return user, ip, filepath
 
 
-# the good one
-# we expect a specific directory structure: /spicedata/{mission}/{weirddir}/data/{kernel}/{file}
+# indexes all kernel files from the /spicedata directory
+# fileinfo stored in /spicedata/.spicedb.sqlite
 # this method is called at the end of this init file
 def populate_spicedb():
 
-    # trash old db because we would be hashing every file for comparison anyways
+    # trash the old db,  we would be hashing every file for comparison anyways
     if os.path.exists('/spicedata/.spicedb.sqlite'):
         os.remove('/spicedata/.spicedb.sqlite')
         
-    # atm we only use one table in the database - db exists just for speed/storage
     # database format will be: | Mission | Kernel | File | Path | Hash | Newest |
     conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
     c = conn.cursor()
     c.execute("CREATE TABLE SPICE (Mission TEXT, Kernel TEXT, File TEXT, Path TEXT, Hash TEXT, Newest INTEGER )")
     
+    # we expect a specific directory structure: /spicedata/{mission}/{weirddir}/data/{kernel}/{file}
     print(datetime.now().strftime("%H:%M:%S") + ' - Begin Indexing of SPICE data from /spicedata directory')
     for root, subdir, files in os.walk('/spicedata'):
-        for name in files: 
-            if name[0] == '.' or name.endswith('.txt'): # skip hidden files, skip ckinfos and such
+        for name in files:
+            if name[0] == '.': # skip hidden files
                 continue
 
-            # split path to current file to see if we are inside a kernel
-            # split format will be: ['', 'spicedata', '{clem1-l-spice-6-v1.0}', 'clsp_1000', 'data', 'ck']
+            # split format will be: ['', 'spicedata', 'clem1-l-spice-6-v1.0', 'clsp_1000', 'data', 'ck']
             split = root.split('/')
-            if len(split) >=5 and (split[4] in ['data', 'extras']): # thank god these directories are on same index
+            if len(split) >=5 and (split[4] in ['data', 'extras']): # we only care about kernel and mk files, which are always 4 dirs down 
+
+                # there is probs a wayyyy nicer way to do this, but it keeps the comparisons to a minimum
+                # big issue: we cant guarantee that the -info.txt file will be the first to be read.... print will happen in the middle of the kernel directory
+                if name.endswith('info.txt'): # we can expect a single ckinfo.txt, mkinfo.txt, etc in every kernel directory
+                    print(datetime.now().strftime("%H:%M:%S") + ' - Indexing Kernel [' + split[5] + '] for Mission [' + missions_readable[split[2]] + ']')
+                    continue 
+
                 fhash = farmhash.hash64(str(io.open(root+'/'+name,'rb').read())) # spice data encoding is mixed, so read as binary
                 c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
                           .format(mn=missions_readable[split[2]], kn=split[5], fn=name, fp=root, fh=fhash, new=0))
@@ -86,68 +92,6 @@ def populate_spicedb():
     conn.commit()
     conn.close()
     print(datetime.now().strftime("%H:%M:%S") + ' - Finished Indexing of SPICE data, fileinfo stored in /spicedata/.spicedb.sqlite')
-
-
-# populates spice database with file info starting from /spicedata
-# the spice database will be a hidden file: /spicedata/.spicedb.sqlite
-# TODO: if a file is deleted, it should be removed from the db... but would that require confirming that all files still exist?
-# ALSO: if we are reading the whole file as binary and hashing anyways, maybe we should just delete the whole db and repopulate every time???
-#       there isnt a lot of value to knowing that we have changed a hash.. unless we want to report that the file has changed,
-#       which i think we can assume the user would know about
-def populate_spicedb_ugly():
-
-    # atm we only use one table in the database - mostly just for storage -> quick access
-    # database format will be: | Mission | Kernel | File | Path | Hash | Newest |
-    conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
-    c = conn.cursor()
-    c.execute("CREATE TABLE IF NOT EXISTS SPICE (Mission TEXT, Kernel TEXT, File TEXT, Path TEXT, Hash TEXT, Newest INTEGER )")
-
-    # ooh spicy loops ~ maybe we should just os.walk this
-    # we expect a specific directory structure: /spicedata/{mission}/data/{kernel}/{file}
-    print('Begin Indexing of SPICE data from /spicedata directory')
-    for mis in [m for m in os.listdir('/spicedata') if not m[0] == '.']:
-        for ker in [k for k in os.listdir('/spicedata/'+mis+'/data') if not k[0] == '.']:
-            print('Indexing Kernel [' + ker +  '] for Mission [' + missions_readable[mis] + ']')
-            for file in [f for f in os.listdir('/spicedata/'+mis+'/data/'+ker) if not f[0] == '.']:
-
-                fpath = '/spicedata/'+mis+'/data/'+ker+'/'
-                if os.path.isdir(fpath+file): # cant hash a directory... although we arent expecting any at this level
-                    continue
-                fhash = farmhash.hash64(str(io.open(fpath+file,'rb').read())) # spice data encoding is mixed, so read as binary
-
-                # check if the file already exists for a certain mission and kernel
-                # if it already exists, we want to update the hash, otherwise, we insert the full row
-                c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(mn=missions_readable[mis], kn=ker, fn=file))
-                row = c.fetchall()
-                if row != []:
-                    if row[0][4] != fhash:
-                        c.execute("UPDATE SPICE SET Hash = '{hn}' WHERE Mission ='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(hn=fhash, mn=missions_readable[mis], kn=ker, fn=file))
-                else:
-                    c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
-                          .format(mn=missions_readable[mis], kn=ker, fn=file, fp=fpath, fh=fhash, new=0))
-
-        # grab metakernel files: /spicedata/{mission}/extras/mk/{file}... same process (Is there a way to combine regular kernels and metakernels logic?)
-        print('Indexing Metakernels for Mission [' + missions_readable[mis] + ']')
-        for file in [f for f in os.listdir('/spicedata/'+mis+'/extras/mk') if not file[0] == '.']:
-
-            fpath = '/spicedata/'+mis+'/extras/mk/'
-            if os.path.isdir(fpath+file):
-                    continue
-            fhash = farmhash.hash64(str(io.open(fpath+file,'rb').read()))
-
-            # delish copypaste - pls get rid of me
-            c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='mk' AND File='{fn}'".format(mn=missions_readable[mis], fn=file))
-            row = c.fetchall()
-            if row != []:
-                if row[0][4] != fhash:
-                    c.execute("UPDATE SPICE SET Hash = '{hn}' WHERE Mission ='{mn}' AND Kernel='mk' AND File='{fn}'".format(hn=fhash, mn=missions_readable[mis], fn=file))
-            else:
-                c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
-                      .format(mn=missions_readable[mis], kn='mk', fn=file, fp=fpath, fh=fhash, new=0))
-            
-    conn.commit()
-    conn.close()
-    print('Finished Indexing of SPICE data, stored in /spicedata/.spicedb.sqlite')
 
 
 def create_dirdf(directory):
