@@ -59,7 +59,7 @@ def configure():
 # this method is called at the end of this init file
 def populate_spicedb():
 
-    # trash the old db,  we would be hashing every file for comparison anyways
+    # trash the old db bc its faster than comparing values and updating
     if os.path.exists('/spicedata/.spicedb.sqlite'):
         os.remove('/spicedata/.spicedb.sqlite')
         
@@ -75,8 +75,9 @@ def populate_spicedb():
             if name[0] == '.': # skip hidden files
                 continue
 
-            split = root.split('/') # full split format will be: ['', 'spicedata', 'clem1-l-spice-6-v1.0', 'clsp_1000', 'data', 'ck']
-            if len(split) >=5 and (split[4] in ['data', 'extras']): # we only care about kernel and mk files, which are always 4 dirs down 
+            # full split format will be: ['', 'spicedata', 'clem1-l-spice-6-v1.0', 'clsp_1000', 'data', 'ck']
+            split = root.split('/') 
+            if len(split) >=6 and (split[4] in ['data', 'extras']): # we only care about kernel and mk files, which are always 4 dirs down 
 
                 # issue: cant be sure that the -info.txt file will read first.... print could happen in the middle of the kernel directory
                 if name.endswith('info.txt'): # we can expect a single ckinfo.txt, mkinfo.txt, etc in every kernel directory
@@ -90,6 +91,26 @@ def populate_spicedb():
     conn.commit()
     conn.close()
     print(datetime.now().strftime("%H:%M:%S") + ' - Finished Indexing of SPICE data, fileinfo stored in /spicedata/.spicedb.sqlite')
+
+
+# executes a SQL SELECT and formats return into an array of dicts
+def sqlselect_dict(select_command):
+
+    conn = sqlite3.connect('./spice_data/.spicedb.sqlite')
+    c = conn.cursor()
+    c.execute(select_command)
+    sql_rows = c.fetchall() 
+    conn.close()
+
+    dicts = []
+    for row in sql_rows:
+        dicts.append({  'mission': row[0],
+                        'kernel' : row[1],
+                        'file'   : row[2],
+                        'path'   : row[3],
+                        'hash'   : row[4],
+                        'newest' : row[5]   })
+    return dicts
 
 
 def create_dirdf(directory):
