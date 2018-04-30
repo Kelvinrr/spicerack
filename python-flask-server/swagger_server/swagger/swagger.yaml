@@ -1,0 +1,838 @@
+---
+swagger: "2.0"
+info:
+  description: "About"
+  version: "1.0"
+  title: "Spicerack"
+  contact:
+    email: "jlaura@usgs.gov"
+  license:
+    name: "UnLicense"
+    url: "http://unlicense.org/"
+host: "astrogeology.wr.usgs.gov"
+basePath: "/api/"
+schemes:
+- "http"
+- "https"
+paths:
+  /home:
+    get:
+      tags:
+      - "home"
+      summary: "List of available endpoints from home directory"
+      operationId: "get_home_endpoints"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Endpoints"
+      x-swagger-router-controller: "swagger_server.controllers.home_controller"
+  /home/dataframe:
+    get:
+      tags:
+      - "home"
+      summary: "Dataframe of the home directory in JSON"
+      operationId: "get_home_dataframe"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Dataframe"
+      x-swagger-router-controller: "swagger_server.controllers.home_controller"
+  /home/hash:
+    get:
+      tags:
+      - "home"
+      summary: "Hash of the home dataframe"
+      description: ""
+      operationId: "get_home_hash"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hash"
+      x-swagger-router-controller: "swagger_server.controllers.home_controller"
+  /home/naif:
+    get:
+      tags:
+      - "missions"
+      summary: "List of available missions in naif format"
+      operationId: "get_home_naif"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Missions"
+      x-swagger-router-controller: "swagger_server.controllers.missions_controller"
+  /home/missions:
+    get:
+      tags:
+      - "missions"
+      summary: "List of available missions (Human-Readable)"
+      description: ""
+      operationId: "get_missions"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Missions"
+      x-swagger-router-controller: "swagger_server.controllers.missions_controller"
+  /home/missions/{mission}:
+    get:
+      tags:
+      - "missions"
+      summary: "List of the available endpoints for a given mission"
+      operationId: "get_mission_endpoints"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Endpoints"
+        400:
+          description: "Unable to get endpoints for given mission"
+      x-swagger-router-controller: "swagger_server.controllers.missions_controller"
+  /home/missions/{mission}/misc:
+    get:
+      tags:
+      - "missions"
+      summary: "List of the available misc. files for a given mission"
+      operationId: "get_misc"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Unable to get files for given mission"
+      x-swagger-router-controller: "swagger_server.controllers.missions_controller"
+  /home/missions/{mission}/kernels:
+    get:
+      tags:
+      - "kernels"
+      summary: "List of available kernels for a given mission"
+      operationId: "get_kernels"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Kernels"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.kernels_controller"
+  /home/missions/{mission}/kernels/{kernel}:
+    get:
+      tags:
+      - "kernels"
+      summary: "List of the available endpoints for a given mission/kernel"
+      operationId: "get_kernel_endpoints"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Endpoints"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.kernels_controller"
+  /home/missions/{mission}/kernels/{kernel}/hash:
+    get:
+      tags:
+      - "kernels"
+      summary: "Hash of a kernel for a given mission"
+      operationId: "get_kernel_hash"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hash"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.kernels_controller"
+  /home/missions/{mission}/metakernels:
+    get:
+      tags:
+      - "metakernels"
+      summary: "List of available metakernels for a given mission"
+      operationId: "get_metakernels"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
+  /home/missions/{mission}/metakernels/{file}:
+    get:
+      tags:
+      - "metakernels"
+      summary: "Hash, Path and Links for a given metakernel file"
+      operationId: "get_metakernel_dict"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "file"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
+  /home/missions/{mission}/metakernels/{file}/raw:
+    get:
+      tags:
+      - "metakernels"
+      summary: "Raw contents of a given metakernel file"
+      description: ""
+      operationId: "get_mk_raw"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "file"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Raw"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
+  /home/missions/{mission}/metakernels/newest:
+    get:
+      tags:
+      - "metakernels"
+      summary: "Newest metakernel for a given mission"
+      operationId: "get_mk_newest"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
+  /home/missions/{mission}/metakernels/years:
+    get:
+      tags:
+      - "metakernels"
+      summary: "List of years represented in the versions of metakernels for a given\
+        \ mission"
+      operationId: "get_mk_years"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
+  /home/missions/{mission}/metakernels/years/{year}:
+    get:
+      tags:
+      - "metakernels"
+      summary: "List of available metakernels for a given mission and year"
+      operationId: "get_mk_year"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "year"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
+  /home/missions/{mission}/metakernels/years/{year}/newest:
+    get:
+      tags:
+      - "metakernels"
+      summary: "Newest metakernels for a given mission and year"
+      operationId: "get_mk_year_newest"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "year"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
+  /home/missions/{mission}/kernels/{kernel}/files:
+    get:
+      tags:
+      - "files_name_versioned"
+      summary: "List of available files for a given mission/kernel"
+      operationId: "get_files"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
+  /home/missions/{mission}/kernels/{kernel}/files/newest:
+    get:
+      tags:
+      - "files_name_versioned"
+      summary: "Newest files for a given mission/kernel"
+      operationId: "get_kernels_newest"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
+  /home/missions/{mission}/kernels/{kernel}/files/{file}:
+    get:
+      tags:
+      - "files_name_versioned"
+      summary: "List of available endpoints for a given versioned file"
+      operationId: "get_file_endpoints"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "file"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Endpoints"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
+  /home/missions/{mission}/kernels/{kernel}/files/{file}/hash:
+    get:
+      tags:
+      - "files_name_versioned"
+      summary: "Hashed contents of a given versioned file"
+      operationId: "get_file_hash"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "file"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hash"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
+  /home/missions/{mission}/kernels/{kernel}/files/{file}/raw:
+    get:
+      tags:
+      - "files_name_versioned"
+      summary: "Raw contents of a given versioned file"
+      operationId: "get_file_raw"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "file"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hash"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
+  /home/missions/{mission}/kernels/{kernel}/files/{file}/path:
+    get:
+      tags:
+      - "files_name_versioned"
+      summary: "Filepath of a given versioned file"
+      operationId: "get_file_path"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "file"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
+  /home/missions/{mission}/kernels/{kernel}/files/{name}/newest:
+    get:
+      tags:
+      - "files_name_unversioned"
+      summary: "Newest version of a given file"
+      operationId: "get_fn_newest"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "name"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.files_name_unversioned_controller"
+  /home/missions/{mission}/kernels/{kernel}/files/{name}/{year}:
+    get:
+      tags:
+      - "files_name_unversioned"
+      summary: "Newest version of a given file"
+      operationId: "get_fn_year"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "name"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "year"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.files_name_unversioned_controller"
+  /home/missions/{mission}/kernels/{kernel}/files/{name}/{year}/newest:
+    get:
+      tags:
+      - "files_name_unversioned"
+      summary: "Newest file for a given year"
+      operationId: "get_fn_year_newest"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "kernel"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "name"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "year"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filelist"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.files_name_unversioned_controller"
+  /home/refresh:
+    get:
+      tags:
+      - "home"
+      summary: "Refresh database of file info"
+      description: ""
+      operationId: "refresh_db"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Update"
+      x-swagger-router-controller: "swagger_server.controllers.home_controller"
+  /home/update:
+    get:
+      tags:
+      - "sync"
+      summary: "List of available nodes"
+      description: ""
+      operationId: "list_nodes"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties: {}
+      x-swagger-router-controller: "swagger_server.controllers.sync_controller"
+  /home/update/{user}:
+    get:
+      tags:
+      - "sync"
+      summary: "List of the next available endpoints for a given node"
+      description: ""
+      operationId: "next_places"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "user"
+        in: "path"
+        description: "See where a user can navigate to next"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Update"
+      x-swagger-router-controller: "swagger_server.controllers.sync_controller"
+  /home/update/{user}/sync:
+    get:
+      tags:
+      - "sync"
+      summary: "Synchronize data with another node"
+      description: ""
+      operationId: "sync_nodes"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "user"
+        in: "path"
+        description: "Sync with that user"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Update"
+      x-swagger-router-controller: "swagger_server.controllers.sync_controller"
+  /home/update/{user}/ssh:
+    get:
+      tags:
+      - "sync"
+      summary: "Returns public SSH key"
+      description: ""
+      operationId: "get_ssh_key"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "user"
+        in: "path"
+        description: "Get Public SSH Key"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Update"
+      x-swagger-router-controller: "swagger_server.controllers.sync_controller"
+definitions:
+  Missions:
+    type: "array"
+    items:
+      $ref: "#/definitions/Missions_inner"
+  Kernels:
+    type: "array"
+    items:
+      $ref: "#/definitions/Missions_inner"
+  Metakernels:
+    type: "array"
+    items:
+      $ref: "#/definitions/Missions_inner"
+  Filelist:
+    type: "array"
+    items:
+      $ref: "#/definitions/Missions_inner"
+  Raw:
+    type: "string"
+  Hash:
+    type: "string"
+  Update:
+    type: "string"
+  Dataframe:
+    type: "array"
+    items:
+      type: "object"
+      properties: {}
+  Endpoints:
+    type: "array"
+    items:
+      type: "string"
+  Error:
+    required:
+    - "code"
+    - "message"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+  Missions_inner:
+    properties:
+      name:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
