@@ -6,6 +6,8 @@ import farmhash
 import time
 import sqlite3
 import json
+import glob
+import re
 from datetime import datetime
 
 
@@ -54,6 +56,22 @@ def configure():
         return user, ip, filepath
 
 
+# returns filename of newest kernel version
+def newest_kernel(path, name):
+    split = name.split('.')
+    ext = split[-1]
+    if re.search('_v[0-9]+', name):
+        split = name.split('_v')
+    elif re.search('v[0-9]+', name):
+        split = name.split('v')
+        
+    # path/to/file/fname*.ext
+    regex = path + '/' + split[0] + '*.' + ext 
+    # glob returns filenames in alphabetical order, we can assume the last will be the highest version
+    newest = glob.glob(regex)[-1]
+    return newest.rsplit('/', 1)[1] # we just want the filename, as newest versions always exist in same dir as eachother
+
+
 # indexes all kernel files from the /spicedata directory
 # fileinfo stored in /spicedata/.spicedb.sqlite
 # this method is called at the end of this init file
@@ -66,7 +84,7 @@ def populate_spicedb():
     # database format will be: | Mission | Kernel | File | Path | Hash | Newest |
     conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
     c = conn.cursor()
-    c.execute("CREATE TABLE SPICE (Mission TEXT, Kernel TEXT, File TEXT, Path TEXT, Hash TEXT, Newest INTEGER )")
+    c.execute("CREATE TABLE SPICE (Mission TEXT, Kernel TEXT, File TEXT, Path TEXT, Hash TEXT, Newest TEXT )")
     
     # we expect a specific directory structure: /spicedata/{mission}/{weirddir}/data/{kernel}/{file}
     print(datetime.now().strftime("%H:%M:%S") + ' - Begin Indexing of SPICE data from /spicedata directory')
@@ -83,10 +101,10 @@ def populate_spicedb():
                 if name.endswith('info.txt'): # we can expect a single ckinfo.txt, mkinfo.txt, etc in every kernel directory
                     print(datetime.now().strftime("%H:%M:%S") + ' - Indexing Kernel [' + split[5] + '] for Mission [' + missions_readable[split[2]] + ']')
                     continue 
-
+                newest = newest_kernel(root, name)
                 fhash = farmhash.hash64(str(io.open(root+'/'+name,'rb').read())) # spice data encoding is mixed, so read as binary
-                c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', {new})"
-                          .format(mn=missions_readable[split[2]], kn=split[5], fn=name, fp=root, fh=fhash, new=0))
+                c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', '{new}')"
+                          .format(mn=missions_readable[split[2]], kn=split[5], fn=name, fp=root, fh=fhash, new=newest))
             
     conn.commit()
     conn.close()
