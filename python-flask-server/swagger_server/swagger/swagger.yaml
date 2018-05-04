@@ -32,23 +32,6 @@ paths:
             items:
               $ref: "#/definitions/Endpoints"
       x-swagger-router-controller: "swagger_server.controllers.home_controller"
-  /home/dataframe:
-    get:
-      tags:
-      - "home"
-      summary: "Dataframe of the home directory in JSON"
-      operationId: "get_home_dataframe"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Dataframe"
-      x-swagger-router-controller: "swagger_server.controllers.home_controller"
   /home/hash:
     get:
       tags:

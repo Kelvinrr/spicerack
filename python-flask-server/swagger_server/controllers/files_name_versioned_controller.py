@@ -113,5 +113,6 @@ def get_kernels_newest(mission, kernel):  # noqa: E501
     rows = c.fetchall()
     conn.close() 
 
+    # file = filename for row in sqlselect if filename == newest
     files = [row[2] for row in rows if row[2] == row[5]] # wow
     return files

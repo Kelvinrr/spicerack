@@ -113,7 +113,6 @@ def populate_spicedb():
 
 
 def sqlselect_dictarray(sql_rows):
-
     dicts = []
     for row in sql_rows:
         dicts.append(sqlselect_dict(row))
@@ -121,7 +120,6 @@ def sqlselect_dictarray(sql_rows):
 
 # converts a SQL SELECT return format into an array of dicts
 def sqlselect_dict(row):
-
     return {'mission': row[0],
             'kernel' : row[1],
             'file'   : row[2],
@@ -129,62 +127,19 @@ def sqlselect_dict(row):
             'hash'   : row[4],
             'newest' : row[5]}
 
+def sqlselect_command(command):
+    conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
+    c = conn.cursor()
+    c.execute(command)
+    rows = c.fetchall()
+    conn.close()
+    return rows
 
-def create_dirdf(directory):
-    if not os.path.exists(directory):
-        return "Error: Directory '" + directory + "' does not exist."
-
-    filenames = []
-    hashvalues = []
-
-    for root, subdir, files in os.walk(directory):
-        for name in files:
-            if not name[0] == ".": # ignore hidden files
-                filepath = os.path.join(root, name)
-
-                # hash full file contents
-                # note: we dont know the encoding scheme for the spice data files, so we just read as binary
-                # the labels and headers are all ascii, but the kernels are a mix of ascii and ???
-                file = str(io.open(filepath,'rb').read())
-                filenames.append(filepath.split(directory, 1)[1])
-                hashvalues.append(farmhash.hash64(file))
-
-                # parse file creation date
-    df = pd.DataFrame(data=hashvalues, index = filenames, columns = ["Hash"])
-    df.index.name = directory
-    return df
-
-
-def create_datedf(directory):
-    if not os.path.exists(directory):
-        return "Error: Directory '" + directory + "' does not exist."
-
-    fnames = []
-    dates = []
-
-    for root, subdir, files in os.walk(directory):
-        for name in files:
-            if name.endswith(".lbl"): # only parse labels
-                filepath = os.path.join(root, name)
-                file = io.open(filepath,'r')
-                line = file.readline()
-                product_id = ""
-                product_time = ""
-
-                # check for file kernel being pointed to
-                while line:
-                    if line.startswith("PRODUCT_ID"):
-                        product_id = line.split("= ")[1].strip()
-                    if line.startswith("PRODUCT_CREATION_TIME"):
-                        product_time = line.split("= ")[1].strip()
-                    line = file.readline()
-
-                if product_id and product_time:
-                    fnames.append(product_id)
-                    dates.append(product_time)
-
-    df = pd.DataFrame(data=dates, index = fnames, columns = ["Hash"])
-    df.index.name = directory
+# takes a sql select output and creates a pandas dataframe
+def sqlselect_dataframe(rows):
+    df = pd.DataFrame(columns = ["mission", "kernel", "file", "path", "hash", "newest"])
+    for i in range(len(rows)):
+        df.loc[i] = rows[i]
     return df
 
 
