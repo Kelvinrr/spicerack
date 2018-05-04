@@ -463,7 +463,7 @@ paths:
       tags:
       - "files_name_versioned"
       summary: "List of available endpoints for a given versioned file"
-      operationId: "get_file_endpoints"
+      operationId: "get_file_info"
       produces:
       - "application/json"
       parameters:
@@ -486,37 +486,6 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Endpoints"
-        400:
-          description: "Invalid tag value"
-      x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
-  /home/missions/{mission}/kernels/{kernel}/files/{file}/hash:
-    get:
-      tags:
-      - "files_name_versioned"
-      summary: "Hashed contents of a given versioned file"
-      operationId: "get_file_hash"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "mission"
-        in: "path"
-        required: true
-        type: "string"
-      - name: "kernel"
-        in: "path"
-        required: true
-        type: "string"
-      - name: "file"
-        in: "path"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Hash"
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
@@ -548,37 +517,6 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Hash"
-        400:
-          description: "Invalid tag value"
-      x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
-  /home/missions/{mission}/kernels/{kernel}/files/{file}/path:
-    get:
-      tags:
-      - "files_name_versioned"
-      summary: "Filepath of a given versioned file"
-      operationId: "get_file_path"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "mission"
-        in: "path"
-        required: true
-        type: "string"
-      - name: "kernel"
-        in: "path"
-        required: true
-        type: "string"
-      - name: "file"
-        in: "path"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Filelist"
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"

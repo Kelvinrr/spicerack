@@ -10,7 +10,7 @@ import glob
 import re
 from datetime import datetime
 
-
+# we only support the ros-e_m_a_c-spice-6-v1.0 directory for rosetta, there is another, but it isnt used to populate the db
 missions_readable = {   "clem1-l-spice-6-v1.0"       : "clementine",
                         "co-s_j_e_v-spice-6-v1.0"    : "cassini_orbiter",
                         "dawn-m_a-spice-6-v1.0"      : "dawn",
@@ -31,7 +31,7 @@ missions_readable = {   "clem1-l-spice-6-v1.0"       : "clementine",
                         "near-a-spice-6-v1.0"        : "near",
                         "nh-j_p_ss-spice-6-v1.0"     : "new_horizons",
                         "ody-m-spice-6-v1.0"         : "mars_odyssey",
-                        "ros-e_m_a_c-spice-6-v1.0"   : "rosetta",
+                        "ros-e_m_a_c-spice-6-v1.0"   : "rosetta", 
                         "sdu-c-spice-6-v1.0"         : "stardust",
                         "vco-v-spice-6-v1.0"         : "venus_climate_orbiter",
                         "vex-e_v-spice-6-v1.0"       : "venus_express",
@@ -95,6 +95,7 @@ def populate_spicedb():
 
             # full split format will be: ['', 'spicedata', 'clem1-l-spice-6-v1.0', 'clsp_1000', 'data', 'ck']
             split = root.split('/') 
+            # not sure how this will react to having both rosettas...
             if len(split) >=6 and (split[4] in ['data', 'extras']): # we only care about kernel and mk files, which are always 4 dirs down 
 
                 # issue: cant be sure that the -info.txt file will read first.... print could happen in the middle of the kernel directory
@@ -111,24 +112,22 @@ def populate_spicedb():
     print(datetime.now().strftime("%H:%M:%S") + ' - Finished Indexing of SPICE data, fileinfo stored in /spicedata/.spicedb.sqlite')
 
 
-# executes a SQL SELECT and formats return into an array of dicts
-def sqlselect_dict(select_command):
-
-    conn = sqlite3.connect('./spice_data/.spicedb.sqlite')
-    c = conn.cursor()
-    c.execute(select_command)
-    sql_rows = c.fetchall() 
-    conn.close()
+def sqlselect_dictarray(sql_rows):
 
     dicts = []
     for row in sql_rows:
-        dicts.append({  'mission': row[0],
-                        'kernel' : row[1],
-                        'file'   : row[2],
-                        'path'   : row[3],
-                        'hash'   : row[4],
-                        'newest' : row[5]   })
+        dicts.append(sqlselect_dict(row))
     return dicts
+
+# converts a SQL SELECT return format into an array of dicts
+def sqlselect_dict(row):
+
+    return {'mission': row[0],
+            'kernel' : row[1],
+            'file'   : row[2],
+            'path'   : row[3],
+            'hash'   : row[4],
+            'newest' : row[5]}
 
 
 def create_dirdf(directory):
