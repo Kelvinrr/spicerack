@@ -83,7 +83,15 @@ def get_files(mission, kernel):  # noqa: E501
 
     :rtype: List[Filelist]
     """
-    return 'do some magic!'
+    conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}'".format(mn=mission, kn=kernel))
+    rows = c.fetchall()
+    conn.close() 
+
+    files = [row[2] for row in rows]
+    return files
 
 
 def get_kernels_newest(mission, kernel):  # noqa: E501
@@ -98,4 +106,12 @@ def get_kernels_newest(mission, kernel):  # noqa: E501
 
     :rtype: List[Filelist]
     """
-    return 'do some magic!'
+    conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}'".format(mn=mission, kn=kernel))
+    rows = c.fetchall()
+    conn.close() 
+
+    files = [row[2] for row in rows if row[2] == row[5]] # wow
+    return files
