@@ -15,7 +15,7 @@ schemes:
 - "http"
 - "https"
 paths:
-  /home:
+  /home/:
     get:
       tags:
       - "home"
@@ -32,7 +32,7 @@ paths:
             items:
               $ref: "#/definitions/Endpoints"
       x-swagger-router-controller: "swagger_server.controllers.home_controller"
-  /home/hash:
+  /home/hash/:
     get:
       tags:
       - "home"
@@ -50,7 +50,7 @@ paths:
             items:
               $ref: "#/definitions/Hash"
       x-swagger-router-controller: "swagger_server.controllers.home_controller"
-  /home/naif:
+  /home/naif/:
     get:
       tags:
       - "missions"
@@ -67,7 +67,7 @@ paths:
             items:
               $ref: "#/definitions/Missions"
       x-swagger-router-controller: "swagger_server.controllers.missions_controller"
-  /home/missions:
+  /home/missions/:
     get:
       tags:
       - "missions"
@@ -85,12 +85,12 @@ paths:
             items:
               $ref: "#/definitions/Missions"
       x-swagger-router-controller: "swagger_server.controllers.missions_controller"
-  /home/missions/{mission}:
+  /home/missions/{mission}/:
     get:
       tags:
       - "missions"
       summary: "List of the available endpoints for a given mission"
-      operationId: "get_mission_endpoints"
+      operationId: "get_mission_info"
       produces:
       - "application/json"
       parameters:
@@ -108,7 +108,7 @@ paths:
         400:
           description: "Unable to get endpoints for given mission"
       x-swagger-router-controller: "swagger_server.controllers.missions_controller"
-  /home/missions/{mission}/misc:
+  /home/missions/{mission}/misc/:
     get:
       tags:
       - "missions"
@@ -131,7 +131,7 @@ paths:
         400:
           description: "Unable to get files for given mission"
       x-swagger-router-controller: "swagger_server.controllers.missions_controller"
-  /home/missions/{mission}/kernels:
+  /home/missions/{mission}/kernels/:
     get:
       tags:
       - "kernels"
@@ -154,12 +154,12 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.kernels_controller"
-  /home/missions/{mission}/kernels/{kernel}:
+  /home/missions/{mission}/kernels/{kernel}/:
     get:
       tags:
       - "kernels"
       summary: "List of the available endpoints for a given mission/kernel"
-      operationId: "get_kernel_endpoints"
+      operationId: "get_kernel_info"
       produces:
       - "application/json"
       parameters:
@@ -181,34 +181,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.kernels_controller"
-  /home/missions/{mission}/kernels/{kernel}/hash:
-    get:
-      tags:
-      - "kernels"
-      summary: "Hash of a kernel for a given mission"
-      operationId: "get_kernel_hash"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "mission"
-        in: "path"
-        required: true
-        type: "string"
-      - name: "kernel"
-        in: "path"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Hash"
-        400:
-          description: "Invalid tag value"
-      x-swagger-router-controller: "swagger_server.controllers.kernels_controller"
-  /home/missions/{mission}/metakernels:
+  /home/missions/{mission}/metakernels/:
     get:
       tags:
       - "metakernels"
@@ -231,12 +204,12 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/{file}:
+  /home/missions/{mission}/metakernels/{file}/:
     get:
       tags:
       - "metakernels"
       summary: "Hash, Path and Links for a given metakernel file"
-      operationId: "get_metakernel_dict"
+      operationId: "get_metakernel_info"
       produces:
       - "application/json"
       parameters:
@@ -258,7 +231,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/{file}/raw:
+  /home/missions/{mission}/metakernels/{file}/raw/:
     get:
       tags:
       - "metakernels"
@@ -286,7 +259,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/newest:
+  /home/missions/{mission}/metakernels/newest/:
     get:
       tags:
       - "metakernels"
@@ -309,7 +282,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/years:
+  /home/missions/{mission}/metakernels/years/:
     get:
       tags:
       - "metakernels"
@@ -333,7 +306,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/years/{year}:
+  /home/missions/{mission}/metakernels/years/{year}/:
     get:
       tags:
       - "metakernels"
@@ -360,7 +333,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/metakernels/years/{year}/newest:
+  /home/missions/{mission}/metakernels/years/{year}/newest/:
     get:
       tags:
       - "metakernels"
@@ -387,7 +360,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.metakernels_controller"
-  /home/missions/{mission}/kernels/{kernel}/files:
+  /home/missions/{mission}/kernels/{kernel}/files/:
     get:
       tags:
       - "files_name_versioned"
@@ -414,7 +387,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
-  /home/missions/{mission}/kernels/{kernel}/files/newest:
+  /home/missions/{mission}/kernels/{kernel}/files/newest/:
     get:
       tags:
       - "files_name_versioned"
@@ -441,7 +414,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
-  /home/missions/{mission}/kernels/{kernel}/files/{file}:
+  /home/missions/{mission}/kernels/{kernel}/files/{file}/:
     get:
       tags:
       - "files_name_versioned"
@@ -472,7 +445,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
-  /home/missions/{mission}/kernels/{kernel}/files/{file}/raw:
+  /home/missions/{mission}/kernels/{kernel}/files/{file}/raw/:
     get:
       tags:
       - "files_name_versioned"
@@ -503,7 +476,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.files_name_versioned_controller"
-  /home/missions/{mission}/kernels/{kernel}/files/{name}/newest:
+  /home/missions/{mission}/kernels/{kernel}/files/{name}/newest/:
     get:
       tags:
       - "files_name_unversioned"
@@ -534,7 +507,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.files_name_unversioned_controller"
-  /home/missions/{mission}/kernels/{kernel}/files/{name}/{year}:
+  /home/missions/{mission}/kernels/{kernel}/files/{name}/{year}/:
     get:
       tags:
       - "files_name_unversioned"
@@ -569,7 +542,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.files_name_unversioned_controller"
-  /home/missions/{mission}/kernels/{kernel}/files/{name}/{year}/newest:
+  /home/missions/{mission}/kernels/{kernel}/files/{name}/{year}/newest/:
     get:
       tags:
       - "files_name_unversioned"
@@ -604,7 +577,7 @@ paths:
         400:
           description: "Invalid tag value"
       x-swagger-router-controller: "swagger_server.controllers.files_name_unversioned_controller"
-  /home/refresh:
+  /home/refresh/:
     get:
       tags:
       - "home"
@@ -622,7 +595,7 @@ paths:
             items:
               $ref: "#/definitions/Update"
       x-swagger-router-controller: "swagger_server.controllers.home_controller"
-  /home/update:
+  /home/update/:
     get:
       tags:
       - "sync"
@@ -639,13 +612,13 @@ paths:
             type: "object"
             properties: {}
       x-swagger-router-controller: "swagger_server.controllers.sync_controller"
-  /home/update/{user}:
+  /home/update/{user}/:
     get:
       tags:
       - "sync"
       summary: "List of the next available endpoints for a given node"
       description: ""
-      operationId: "next_places"
+      operationId: "user_update_endpoints"
       produces:
       - "application/json"
       parameters:
@@ -662,7 +635,7 @@ paths:
             items:
               $ref: "#/definitions/Update"
       x-swagger-router-controller: "swagger_server.controllers.sync_controller"
-  /home/update/{user}/sync:
+  /home/update/{user}/sync/:
     get:
       tags:
       - "sync"
@@ -685,7 +658,7 @@ paths:
             items:
               $ref: "#/definitions/Update"
       x-swagger-router-controller: "swagger_server.controllers.sync_controller"
-  /home/update/{user}/ssh:
+  /home/update/{user}/ssh/:
     get:
       tags:
       - "sync"

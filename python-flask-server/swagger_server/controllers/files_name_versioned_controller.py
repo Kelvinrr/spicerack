@@ -28,11 +28,11 @@ def get_file_info(mission, kernel, file):  # noqa: E501
     if rows == []:
         return "Unable to find a file that matches mission ["+mission+"], kernel ["+kernel+"], and filename ["+file+"]."
     file_info = sqlselect_dict(rows[0]) # there should only be one possible return for a select like this. if we want to catch edge cases, we can add sqlselect_dictarray(rows)
-    if file.endswith('.lbl'):
-        file_info["links"] = ["/raw"]
-    else:
-        file_info["links"] = []
 
+    file_info["links"] = []
+    if file.endswith(('.lbl', '.txt')):
+        file_info["links"].append("/raw")
+        
     return file_info
 
 
@@ -53,7 +53,7 @@ def get_file_raw(mission, kernel, file):  # noqa: E501
 
     :rtype: List[Hash]
     """
-    if not file.endswith(('.lbl', '.txt'):
+    if not file.endswith(('.lbl', '.txt')):
         return "We do not current support raw display for files not ending with a '.lbl' or a '.txt' extension."
 
     rows = sqlselect_command("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(mn=mission, kn=kernel, fn=file))
@@ -61,7 +61,7 @@ def get_file_raw(mission, kernel, file):  # noqa: E501
         return "Unable to find a file that matches mission ["+mission+"], kernel ["+kernel+"], and filename ["+file+"]."
 
     path = rows[0][3] # we shouldnt ever have more than one file that would match the query, so we should? be fine directly indexing zero
-    file = io.open(path+'/'+file, 'r').readlines()
+    file = io.open(path+'/'+file, 'r').readlines() #TODO: clean up the special characters from this output
     return file
 
 def get_files(mission, kernel):  # noqa: E501
