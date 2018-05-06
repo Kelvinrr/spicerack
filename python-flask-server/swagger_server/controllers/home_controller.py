@@ -37,4 +37,5 @@ def refresh_db():  # noqa: E501
 
     :rtype: List[Update]
     """
-    populate_spicedb()
+    # should we be protecting this endpoint from other users???? someone else could refresh you db on accident
+    populate_spicedb() 

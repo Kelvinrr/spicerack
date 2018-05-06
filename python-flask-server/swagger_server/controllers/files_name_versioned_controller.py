@@ -6,7 +6,7 @@ import io
 from swagger_server.models.endpoints import Endpoints  # noqa: E501
 from swagger_server.models.filelist import Filelist  # noqa: E501
 from swagger_server.models.hash import Hash  # noqa: E501
-from swagger_server import util, sqlselect_dict
+from swagger_server import util, sqlselect_dict, sqlselect_command
 
 
 def get_file_info(mission, kernel, file):  # noqa: E501
@@ -23,12 +23,8 @@ def get_file_info(mission, kernel, file):  # noqa: E501
 
     :rtype: List[Endpoints]
     """
-    conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
-    c = conn.cursor()
 
-    c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(mn=mission, kn=kernel, fn=file))
-    rows = c.fetchall()
-    conn.close()   
+    rows = sqlselect_command("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(mn=mission, kn=kernel, fn=file))
     if rows == []:
         return "Unable to find a file that matches mission ["+mission+"], kernel ["+kernel+"], and filename ["+file+"]."
     file_info = sqlselect_dict(rows[0]) # there should only be one possible return for a select like this. if we want to catch edge cases, we can add sqlselect_dictarray(rows)
@@ -57,17 +53,14 @@ def get_file_raw(mission, kernel, file):  # noqa: E501
 
     :rtype: List[Hash]
     """
-    if not file.endswith('.lbl'):
-        return "We do not current support raw display for files not ending with a '.lbl' extension."
+    if not file.endswith(('.lbl', '.txt'):
+        return "We do not current support raw display for files not ending with a '.lbl' or a '.txt' extension."
 
-    conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
-    c = conn.cursor()
+    rows = sqlselect_command("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(mn=mission, kn=kernel, fn=file))
+    if rows == []:
+        return "Unable to find a file that matches mission ["+mission+"], kernel ["+kernel+"], and filename ["+file+"]."
 
-    c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}' AND File='{fn}'".format(mn=mission, kn=kernel, fn=file))
-    rows = c.fetchall()
-    conn.close() 
-
-    path = rows[0][3]
+    path = rows[0][3] # we shouldnt ever have more than one file that would match the query, so we should? be fine directly indexing zero
     file = io.open(path+'/'+file, 'r').readlines()
     return file
 
@@ -83,13 +76,7 @@ def get_files(mission, kernel):  # noqa: E501
 
     :rtype: List[Filelist]
     """
-    conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
-    c = conn.cursor()
-
-    c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}'".format(mn=mission, kn=kernel))
-    rows = c.fetchall()
-    conn.close() 
-
+    rows = sqlselect_command("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}'".format(mn=mission, kn=kernel))
     files = [row[2] for row in rows]
     return files
 
@@ -106,13 +93,7 @@ def get_kernels_newest(mission, kernel):  # noqa: E501
 
     :rtype: List[Filelist]
     """
-    conn = sqlite3.connect('/spicedata/.spicedb.sqlite')
-    c = conn.cursor()
-
-    c.execute("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}'".format(mn=mission, kn=kernel))
-    rows = c.fetchall()
-    conn.close() 
-
+    rows = sqlselect_command("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='{kn}'".format(mn=mission, kn=kernel))
     # file = filename for row in sqlselect if filename == newest
     files = [row[2] for row in rows if row[2] == row[5]] # wow
     return files
