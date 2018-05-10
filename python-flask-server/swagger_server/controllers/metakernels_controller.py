@@ -1,5 +1,6 @@
 import connexion
 import six
+import re
 
 from swagger_server.models.filelist import Filelist  # noqa: E501
 from swagger_server.models.raw import Raw  # noqa: E501
@@ -55,7 +56,10 @@ def get_mk_newest(mission):  # noqa: E501
 
     :rtype: List[Filelist]
     """
-    return 'do some magic!'
+    rows = sqlselect_command("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='mk'".format(mn=mission))
+    # file = filename for row in sqlselect if filename == newest
+    files = [row[2] for row in rows if row[2] == row[5]]
+    return files
 
 
 def get_mk_raw(mission, file):  # noqa: E501
@@ -94,7 +98,10 @@ def get_mk_year(mission, year):  # noqa: E501
 
     :rtype: List[Filelist]
     """
-    return 'do some magic!'
+    regex = "%_"+str(year)+"_v%"
+    rows = sqlselect_command("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='mk' AND File LIKE '{yr}'".format(mn=mission, yr=regex))
+    files = [row[2] for row in rows] # file = filename for row in sqlselect if filename == newest
+    return files
 
 
 def get_mk_year_newest(mission, year):  # noqa: E501
@@ -109,7 +116,10 @@ def get_mk_year_newest(mission, year):  # noqa: E501
 
     :rtype: List[Filelist]
     """
-    return 'do some magic!'
+    regex = "%_"+str(year)+"_v%"
+    rows = sqlselect_command("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='mk' AND File LIKE '{yr}'".format(mn=mission, yr=regex))
+    files = [row[2] for row in rows if row[2] == row[5]] # file = filename for row in sqlselect if filename == newest
+    return files
 
 
 def get_mk_years(mission):  # noqa: E501
@@ -122,4 +132,10 @@ def get_mk_years(mission):  # noqa: E501
 
     :rtype: List[Filelist]
     """
-    return 'do some magic!'
+    rows = sqlselect_command("SELECT * FROM SPICE WHERE Mission='{mn}' AND Kernel='mk'".format(mn=mission))
+    years = []
+    for file in [row[2] for row in rows]:
+        year = re.search('_[0-9][0-9][0-9][0-9]_v', file) # theres probably a nicer way using re.compile
+        if year != None:
+            years.append(year.group(0)[1:-2])
+    return sorted(list(set(years)))

@@ -96,22 +96,21 @@ def populate_spicedb():
 
             # full split format will be: ['', 'spicedata', 'clem1-l-spice-6-v1.0', 'clsp_1000', 'data', 'ck']
             split = root.split('/') 
-            # not sure how this will react to having both rosettas...
-            if len(split)>=6 and (split[5] in ['ck', 'ek', 'fk', 'spk', 'sclk', 'lsk', 'ik', 'pck', 'mk']): # we only care about kernel and mk files, which are always 4 dirs down 
+            if len(split) >= 3:
+                if len(split) == 3 and name == 'dsindex.lbl': # we can expect this file at the top level of every mission directory
+                    print(datetime.now().strftime("%H:%M:%S") + ' - Indexing Mission [' + missions_readable[split[2]] + ']')
 
-                # issue: cant be sure that the -info.txt file will read first.... print could happen in the middle of the kernel directory
-                if name.endswith('info.txt'): # we can expect a single ckinfo.txt, mkinfo.txt, etc in every kernel directory
-                    print(datetime.now().strftime("%H:%M:%S") + ' - Indexing Kernel [' + split[5] + '] for Mission [' + missions_readable[split[2]] + ']')
-                    continue 
+                fhash = farmhash.hash64(str(io.open(root+'/'+name,'rb').read())) # spice data encoding is mixed, so read as binary
                 newest = newest_kernel(root, name)
-                fhash = farmhash.hash64(str(io.open(root+'/'+name,'rb').read())) # spice data encoding is mixed, so read as binary
+                mis_name = missions_readable[split[2]]
+
+                if len(split)>=6 and (split[5] in ['ck', 'ek', 'fk', 'spk', 'sclk', 'lsk', 'ik', 'pck', 'mk'] and not name.endswith('.txt')): # kernel and mk files are always 4 dirs down 
+                    ker_name = split[5]
+                else:
+                    ker_name = 'misc'
+
                 c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', '{kn}', '{fn}', '{fp}', '{fh}', '{new}')"
-                          .format(mn=missions_readable[split[2]], kn=split[5], fn=name, fp=root, fh=fhash, new=newest))
-            # misc files    
-            elif len(split) >= 4:
-                fhash = farmhash.hash64(str(io.open(root+'/'+name,'rb').read())) # spice data encoding is mixed, so read as binary
-                c.execute("INSERT OR IGNORE INTO SPICE (Mission, Kernel, File, Path, Hash, Newest) VALUES ('{mn}', 'misc', '{fn}', '{fp}', '{fh}', '{new}')"
-                          .format(mn=missions_readable[split[2]], fn=name, fp=root, fh=fhash, new=name))
+                          .format(mn=mis_name, kn=ker_name, fn=name, fp=root, fh=fhash, new=newest))
             
     conn.commit()
     conn.close()

@@ -48,6 +48,7 @@ def get_fn_year(mission, kernel, name, year):  # noqa: E501
 
     :rtype: List[Filelist]
     """
+    # as far as i have seen, there are no years on the regular kernels... just metakernels
     return 'do some magic!'
 
 

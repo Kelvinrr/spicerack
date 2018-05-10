@@ -16,7 +16,7 @@ def get_home_endpoints():  # noqa: E501
 
     :rtype: List[Endpoints]
     """
-    return ["/hash", "/update", "/naif", "/missions", "/refresh", "/update"]
+    return ["/hash", "/update", "/naif", "/missions", "/refresh"]
 
 
 def get_home_hash():  # noqa: E501
