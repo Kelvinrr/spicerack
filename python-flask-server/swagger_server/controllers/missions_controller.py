@@ -1,5 +1,6 @@
 import connexion
 import six
+import farmhash
 
 from swagger_server.models.endpoints import Endpoints  # noqa: E501
 from swagger_server.models.filelist import Filelist  # noqa: E501
@@ -19,7 +20,7 @@ def get_home_naif():  # noqa: E501
     missions = []
     for row in rows:
         for mis in row:
-            missions.append(missions_true[mis]) 
+            missions.append(missions_true[mis])
 
     return list(set(missions))
 
@@ -29,7 +30,7 @@ def get_misc(mission):  # noqa: E50
 
      # noqa: E501
 
-    :param mission: 
+    :param mission:
     :type mission: str
 
     :rtype: List[Filelist]
@@ -44,7 +45,7 @@ def get_mission_info(mission):  # noqa: E501
 
      # noqa: E501
 
-    :param mission: 
+    :param mission:
     :type mission: str
 
     :rtype: List[Endpoints]
@@ -72,6 +73,6 @@ def get_missions():  # noqa: E501
     missions = []
     for row in rows:
         for mis in row:
-            missions.append(mis) 
+            missions.append(mis)
 
     return list(set(missions))
