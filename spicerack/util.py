@@ -3,6 +3,8 @@ import datetime
 import six
 import typing
 
+import os
+from glob import glob
 
 def _deserialize(data, klass):
     """Deserializes dict, list, str into an object.
@@ -139,3 +141,9 @@ def _deserialize_dict(data, boxed_type):
     """
     return {k: _deserialize(v, boxed_type)
             for k, v in six.iteritems(data)}
+
+
+def get_metakernels(mission=None, year=None, version=None):
+    spice_dir = os.environ.get("SPICE_DATA")
+    missions = [directory.split('_')[0] for directory in glob(os.path.join(spice_dir, '*'))
+    print(missions)

@@ -1,6 +1,0 @@
-Home: Home app/Folder2
-192.168.0.110: thatcher ~/Desktop/Capstone/
-Client3: Daniel /app/Folder2/
-Client4: Kellen /app/Folder2/
-Client5: Ryan /app/Folder2/
-Client6: Tyler /app/Folder2/

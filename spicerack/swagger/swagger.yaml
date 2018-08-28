@@ -18,7 +18,7 @@ paths:
     get:
       summary: "Get a specific kernel"
       description: "Adds an item to the system"
-      operationId: "get_metakernel"
+      operationId: "get_metakernels"
       produces:
       - "application/json"
       parameters:
