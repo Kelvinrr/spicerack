@@ -2,7 +2,7 @@
 
 import connexion
 
-from swagger_server import encoder
+from spicerack import encoder
 
 
 def main():

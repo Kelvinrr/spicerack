@@ -1,20 +1,22 @@
 import connexion
 import six
 
-from swagger_server.models.metakernal import Metakernal  # noqa: E501
-from swagger_server import util
+from spicerack.models.metakernels import Metakernels  # noqa: E501
+from spicerack import util
 
 
-def get_metakernel(mission, version=None):  # noqa: E501
-    """Returns Kernels from query params
+def get_metakernel(mission, year, version):  # noqa: E501
+    """Get a specific kernel, or a set of kernels 
 
     Adds an item to the system # noqa: E501
 
-    :param mission: 
+    :param mission:
     :type mission: str
-    :param version: 
+    :param year:
+    :type year: str
+    :param version:
     :type version: str
 
-    :rtype: Metakernal
+    :rtype: Metakernels
     """
     return 'do some magic!'

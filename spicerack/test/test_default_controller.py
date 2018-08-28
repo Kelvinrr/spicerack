@@ -5,8 +5,8 @@ from __future__ import absolute_import
 from flask import json
 from six import BytesIO
 
-from swagger_server.models.metakernal import Metakernal  # noqa: E501
-from swagger_server.test import BaseTestCase
+from spicerack.models.metakernels import Metakernels  # noqa: E501
+from spicerack.test import BaseTestCase
 
 
 class TestDefaultController(BaseTestCase):
@@ -15,11 +15,13 @@ class TestDefaultController(BaseTestCase):
     def test_get_metakernel(self):
         """Test case for get_metakernel
 
-        Returns Kernels from query params
+        Get a specific kernel
         """
-        query_string = [('version', 'latest')]
+        query_string = [('mission', 'mission_example'),
+                        ('year', 'year_example'),
+                        ('version', 'latest')]
         response = self.client.open(
-            '/v1/missions/{mission}/metakernals/'.format(mission='mission_example'),
+            '/v1/metalkernels/',
             method='GET',
             query_string=query_string)
         self.assert200(response,
