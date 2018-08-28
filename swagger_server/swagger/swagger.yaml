@@ -1,0 +1,62 @@
+---
+swagger: "2.0"
+info:
+  description: "A SpiceAPI for extracting NAIF Spice Data"
+  version: "0.1.0"
+  title: "spicerack"
+  contact:
+    email: "jlaura@usgs.gov"
+  license:
+    name: "UnLicense"
+    url: "http://unlicense.org/"
+host: "localhost:8080"
+basePath: "/v1"
+schemes:
+- "http"
+- "https"
+paths:
+  /missions/{mission}/metakernals/:
+    get:
+      summary: "Returns Kernels from query params"
+      description: "Adds an item to the system"
+      operationId: "get_metakernel"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mission"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "year"
+        in: "query"
+        required: true
+        type: "string"
+      - name: "version"
+        in: "query"
+        required: false
+        type: "string"
+        default: "latest"
+      responses:
+        200:
+          description: "Successful Kernel Search"
+          schema:
+            $ref: "#/definitions/metakernal"
+        400:
+          description: "invalid input, object invalid"
+      x-swagger-router-controller: "spicerack.controllers.get_metakernel"
+definitions:
+  metakernal:
+    properties:
+      year:
+        type: "string"
+        description: "Metakernel year"
+      version:
+        type: "number"
+        description: "Metakernel version"
+      path:
+        type: "string"
+        description: "Path to Metakernel"
+    example:
+      path: "path"
+      year: "year"
+      version: 106

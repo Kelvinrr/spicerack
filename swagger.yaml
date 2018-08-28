@@ -1,0 +1,83 @@
+---
+swagger: "2.0"
+info:
+  description: "A resdtful API for performing queries on NAIF spice data."
+  version: "0.1.0"
+  title: "spicerack"
+  contact:
+    email: "jlaura@usgs.gov"
+  license:
+    name: "UnLicense"
+    url: "http://unlicense.org/"
+host: "localhost:8080"
+basePath: "/v1"
+schemes:
+- "http"
+paths:
+  /metalkernels/:
+    get:
+      summary: "Get a specific kernel"
+      description: "Adds an item to the system"
+      operationId: "get_metakernel"
+      produces:
+      - "application/json"
+      parameters:
+
+      - name: "mission"
+        in: "query"
+        required: true
+        type: "string"
+
+      - name: "year"
+        in: "query"
+        type: "string"
+        required: true
+
+      - name: "version"
+        in: "query"
+        required: true
+        type: "string"
+        default: "latest"
+
+      responses:
+        200:
+          description: "Successful Kernel Search"
+          schema:
+            $ref: "#/definitions/metakernels"
+        400:
+          description: "invalid input, object invalid"
+      x-swagger-router-controller: "spicerack.controllers.get_metakernels"
+
+definitions:
+  metakernel:
+    type: object
+    description: "Metakernel object"
+    properties:
+      mission:
+        type: string
+        description: "The mission which the metakernel belongs to"
+      year:
+        type: integer
+        description: "Metakernel year"
+      version:
+        type: string
+        description: "Metakernel version"
+      path:
+        type: string
+        description: "Path to Metakernel"
+    example:
+      paths: ['/path1', '/path2']
+      year: 2017
+      version: 106
+      mission: "Messenger"
+
+  metakernels:
+    type: object
+    properties:
+      count:
+        type: integer
+        description: "Number of metakernels returned"
+      kernels:
+        type: array
+        items:
+          $ref: "#/definitions/metakernel"
